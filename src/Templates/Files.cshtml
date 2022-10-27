@@ -1,0 +1,110 @@
+﻿@using System
+@using System.Linq
+@using System.Globalization
+@using System.Text.Encodings.Web
+@using Humanizer
+@using RazorLight
+
+@model Formatter.Model
+@inherits TemplatePage<Formatter.Model>
+
+@functions
+{
+    string HtmlEncode(string body) => HtmlEncoder.Default.Encode(body);
+
+    public record Directory(string Name);
+    public record File(string Name, string ReadableSize);
+    public record BreadCrumb(string Segment, string Path);
+
+    string AllFolders = "";
+    BreadCrumb[] BreadCrumbs = { };
+    Directory[] Directories = { };
+    string Path = "";
+    File[] Files = { };
+}
+
+@{
+    var context = this.Model.Context;
+    var contents = this.Model.Contents;
+
+    var requestPath = context.Request.PathBase + context.Request.Path;
+
+    Path = context.Request.Path.Value ?? "/";
+
+    var segments = requestPath.Value!.Split('/', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+    var subfolders = segments.Select(HtmlEncode).Select(s => s.Trim()).ToArray();
+
+    AllFolders = string.Join(" ▸ ", subfolders);
+    AllFolders = string.IsNullOrWhiteSpace(AllFolders) ? "Home" : AllFolders;
+
+    BreadCrumbs = segments.Select((s, i) => new BreadCrumb
+    (
+        Segment: s,
+        Path: $"/{string.Join("/", segments.Take(i + 1))}/"
+    )).ToArray();
+
+    Directories = contents.Where(i => i.IsDirectory).Select(i => new Directory(HtmlEncode(i.Name))).ToArray();
+    Files = contents.Where(i => i.IsDirectory == false).Select(i => new File(
+        Name: HtmlEncode(i.Name),
+        ReadableSize: HtmlEncode(i.Length.Bytes().Humanize("0"))
+    )).ToArray();
+}
+
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='5.5rem' fill='white' font-family='monospace' font-size='150'>⌂</text></svg>" />
+    <link rel="manifest" href="data:text/plain;base64,eyJuYW1lIjoiRmlsZXMgYnkgQ29uZXNvZnQiLCJzaG9ydF9uYW1lIjoiRmlsZXMiLCJpY29ucyI6W3sic3JjIjoiL2ljb25zL2FuZHJvaWQtY2hyb21lLTE5MngxOTIucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic3JjIjoiL2ljb25zL2FuZHJvaWQtY2hyb21lLTI1NngyNTYucG5nIiwic2l6ZXMiOiIyNTZ4MjU2IiwidHlwZSI6ImltYWdlL3BuZyJ9XSwidGhlbWVfY29sb3IiOiIjMDAwMDAwIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwMDAwMDAiLCJzdGFydF91cmwiOiJodHRwczovL2ZpbGVzLmNvbmVzb2Z0Lm5ldCIsImRpc3BsYXkiOiJzdGFuZGFsb25lIn0=" />
+    <meta name="apple-mobile-web-app-title" content="@AllFolders" />
+    <meta name="application-name" content="@AllFolders" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="@AllFolders" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="@AllFolders" />
+    <meta property="og:description" content="@AllFolders" />
+    <meta property="og:image" content="/meta-image.jpg" />
+
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.conesoft.net/style.min.css?v=9fe6d7641071b100b7ee1c31165bd155">
+    <title>▸ @AllFolders</title>
+</head>
+<body>
+    <header>
+        <h1>
+            <nav breadcrumbs green>
+                <a href="/">⌂</a>
+                @foreach (var crumb in BreadCrumbs)
+                {
+                    @:▸ <a href="@crumb.Path">@crumb.Segment</a>
+                }
+            </nav>
+        </h1>
+    </header>
+    <table>
+    @foreach (var directory in Directories)
+    {
+        <tr>
+            <td>
+                <a href="@(Path)@(directory.Name)/">@directory.Name</a>
+            </td>
+            <td />
+            <td>
+                <a icon href="/download-as-file@(Path)@(directory.Name)/">💾</a>
+            </td>
+        </tr>
+    }
+    @foreach (var file in Files)
+    {
+        <tr>
+            <td>
+                <a href="@(Path)@(file.Name)">@file.Name</a>
+            </td>
+            <td green>@file.ReadableSize</td>
+            <td>
+                <a icon href="/download-as-file@(Path)@(file.Name)">💾</a>
+            </td>
+        </tr>
+    }
+    </table>
+</body>
+</html>
