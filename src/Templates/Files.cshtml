@@ -53,8 +53,10 @@
 <!DOCTYPE html>
 <html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='5.5rem' fill='white' font-family='monospace' font-size='150'>⌂</text></svg>" />
-    <link rel="manifest" href="data:text/plain;base64,eyJuYW1lIjoiRmlsZXMgYnkgQ29uZXNvZnQiLCJzaG9ydF9uYW1lIjoiRmlsZXMiLCJpY29ucyI6W3sic3JjIjoiL2ljb25zL2FuZHJvaWQtY2hyb21lLTE5MngxOTIucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic3JjIjoiL2ljb25zL2FuZHJvaWQtY2hyb21lLTI1NngyNTYucG5nIiwic2l6ZXMiOiIyNTZ4MjU2IiwidHlwZSI6ImltYWdlL3BuZyJ9XSwidGhlbWVfY29sb3IiOiIjMDAwMDAwIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwMDAwMDAiLCJzdGFydF91cmwiOiJodHRwczovL2ZpbGVzLmNvbmVzb2Z0Lm5ldCIsImRpc3BsYXkiOiJzdGFuZGFsb25lIn0=" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/icons/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="@AllFolders" />
     <meta name="application-name" content="@AllFolders" />
     <meta name="theme-color" content="#000000" />
@@ -88,8 +90,8 @@
                 <a href="@(Path)@(directory.Name)/">@directory.Name</a>
             </td>
             <td />
-            <td>
-                <a icon href="/download-as-file@(Path)@(directory.Name)/">💾</a>
+                <td @*command-buttons*@>
+                <a icon="download as zip" href="/download-as-file@(Path)@(directory.Name)/">💾</a>
             </td>
         </tr>
     }
@@ -100,11 +102,16 @@
                 <a href="@(Path)@(file.Name)">@file.Name</a>
             </td>
             <td green>@file.ReadableSize</td>
-            <td>
-                <a icon href="/download-as-file@(Path)@(file.Name)">💾</a>
+            <td @*command-buttons*@>
+                <a icon="download" href="/download-as-file@(Path)@(file.Name)">💾</a>
             </td>
         </tr>
     }
     </table>
+    <footer>
+        <p>&copy; @DateTime.Today.Year
+        <p>written by <a href="https://davepermen.net">davepermen</a>
+        <p>a <a href="https://conesoft.net">conesoft product</a> running on .NET @Environment.Version.Major
+    </footer>
 </body>
 </html>

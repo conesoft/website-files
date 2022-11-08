@@ -5,6 +5,7 @@ using RazorLight;
 public class Formatter : IDirectoryFormatter
 {
     private const string TextHtmlUtf8 = "text/html; charset=utf-8";
+    private readonly RazorLightEngine engine = new RazorLightEngineBuilder().UseMemoryCachingProvider().Build();
 
     public virtual async Task GenerateContentAsync(HttpContext context, IEnumerable<IFileInfo> contents)
     {
@@ -18,15 +19,7 @@ public class Formatter : IDirectoryFormatter
             return;
         }
 
-        var engine = new RazorLightEngineBuilder()
-            .SetOperatingAssembly(typeof(Model).Assembly)
-            .Build();
-
-        var template = new
-        {
-            Name = "Demo",
-            Content = await File.ReadAllTextAsync("Templates/Files.cshtml")
-        };
+        var Template = "Templates/Files.cshtml";
 
         var model = new Model
         (
@@ -34,11 +27,17 @@ public class Formatter : IDirectoryFormatter
             Contents: contents
         );
 
-        var results = await engine.CompileRenderStringAsync(template.Name, template.Content, model);
+        var found = engine.Handler.Cache.RetrieveTemplate(Template);
 
-        await HttpResponseWritingExtensions.WriteAsync(context.Response, results);
+        var response = found.Success ?
+            await engine.RenderTemplateAsync(found.Template.TemplatePageFactory(), model)
+            :
+            await engine.CompileRenderStringAsync(Template, await File.ReadAllTextAsync(Template), model)
+            ;
+
+        await HttpResponseWritingExtensions.WriteAsync(context.Response, response);
     }
 
-    public record Model( HttpContext Context, IEnumerable<IFileInfo> Contents);
+    public record Model(HttpContext Context, IEnumerable<IFileInfo> Contents);
 
 }

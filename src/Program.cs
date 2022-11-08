@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.FileProviders;
+﻿using Conesoft.Hosting;
+using Microsoft.Extensions.FileProviders;
 using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ options.StaticFileOptions.RedirectToAppendTrailingSlash = false;
 options.DirectoryBrowserOptions.RedirectToAppendTrailingSlash = false;
 options.DirectoryBrowserOptions.Formatter = new Formatter();
 app.UseFileServer(options);
+
+app.UseHostingDefaults(useDefaultFiles: true, useStaticFiles: true);
 
 app.MapGet("/download-as-file/{*path}", async (string path, HttpContext context) =>
 {
