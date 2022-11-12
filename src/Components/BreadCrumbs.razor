@@ -1,0 +1,29 @@
+﻿@code {
+    [Parameter] public string Path { get; set; } = "";
+
+    public record BreadCrumb(string Segment, string Path);
+}
+
+@{
+    var segments = Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+    var breadCrumbs = segments.Select((s, i) => new BreadCrumb
+    (
+        Segment: s,
+        Path: $"/{string.Join("/", segments.Take(i + 1))}/"
+    )).ToArray();
+}
+
+<header>
+    <h1>
+        <nav breadcrumbs green>
+            <a href="/">⌂</a>
+            @foreach (var crumb in breadCrumbs)
+            {
+                @(" ▸ ")
+
+                <a href="@crumb.Path">@crumb.Segment</a>
+            }
+        </nav>
+    </h1>
+</header>

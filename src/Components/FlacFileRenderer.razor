@@ -1,0 +1,45 @@
+﻿@using FlacLibSharp;
+
+@code {
+    [Parameter] public Conesoft.Files.File Current { get; set; } = Conesoft.Files.Directory.Invalid.AsFile;
+    [Parameter] public string Path { get; set; } = "";
+}
+
+@try
+{
+    using (var flac = new FlacFile(Current.Path))
+    {
+        <td>
+            <a red href="@($"{Path}/{Current.Name}")">
+                @if (string.IsNullOrWhiteSpace(flac.VorbisComment.Album.ToString()) == false)
+                {
+                    <b>@flac.VorbisComment.Album</b>
+
+                    @::
+                }
+                <b>@flac.VorbisComment.Artist</b> - <b>@flac.VorbisComment.Title</b>
+                <aside>(@flac.VorbisComment.Date)</aside>
+                @if (System.IO.File.Exists(Current.Path + ".png"))
+                {
+                    // E:\Public\Music\Davepermen>ffmpeg -i "Davepermen - Vinyl.flac" -filter_complex "[0:a]aformat=channel_layouts=mono,compand=gain=6,showwavespic=s=4096x1080:colors=white:draw=full,format=rgba" -frames:v 1 "Davepermen - Vinyl.flac.png" -y
+                    // for %a in (*.flac) DO ffmpeg -i "%a" -filter_complex "compand=gain=6,showwavespic=s=4096x540:colors=0xFFFFFF7F|white:draw=full,format=rgba" -frames:v 1 "%a.png" -y
+                    <img src="@($"{Path}/{Current.Name}").png" style="
+    height: 200%;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.3;
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0)), linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));">
+                }
+            </a>
+        </td>
+        <td red>@($@"{flac.StreamInfo.Duration.Seconds():mm\:ss}")</td>
+        <td><audio controls src="@($"{Path}/{Current.Name}")" /></td>
+    }
+}
+catch (Exception)
+{
+    <DefaultFileRenderer Current="@Current" Path="@Path" />
+}

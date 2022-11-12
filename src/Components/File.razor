@@ -1,0 +1,25 @@
+﻿@code {
+    [Parameter] public Conesoft.Files.File Current { get; set; } = Conesoft.Files.Directory.Invalid.AsFile;
+    [Parameter] public string Path { get; set; } = "";
+
+    string CleanUp(string extension)
+    {
+        extension = extension.Replace(".", "");
+        extension = char.ToUpper(extension[0]) + extension[1..];
+        return extension;
+    }
+}
+
+@{
+    var type = Type.GetType($"Conesoft.Website.Files.Components.{CleanUp(Current.Extension)}FileRenderer")
+        ?? typeof(DefaultFileRenderer);
+    var parameters = new Dictionary<string, object>
+            {
+                ["Current"] = Current,
+                ["Path"] = Path
+            };
+}
+
+<tr>
+    <DynamicComponent Type="@type" Parameters="@parameters" />
+</tr>

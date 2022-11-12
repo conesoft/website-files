@@ -1,10 +1,10 @@
-﻿{
+{
   "profiles": {
-    "Conesoft - Website - Files": {
+    "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7258;http://localhost:5258",
+      "applicationUrl": "https://localhost:7266;http://localhost:5096",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

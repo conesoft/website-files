@@ -1,0 +1,25 @@
+﻿@inject FileHostingPath fileHostingPath;
+
+@code {
+    [Parameter] public string Path { get; set; }
+    Conesoft.Files.Directory Root => fileHostingPath.Directory / Path;
+}
+
+<section>
+    <table>
+        <tbody>
+            @foreach (var directory in Root.Directories)
+            {
+                <Directory Path="@Path" Current="@directory" />
+            }
+            @foreach (var file in Root.Files)
+            {
+                var filters = new[] { ".flac.png" };
+                if(filters.Any(f => file.Name.EndsWith(f)) == false)
+                {
+                    <File Path="@Path" Current="@file" />
+                }
+            }
+        </tbody>
+    </table>
+</section>

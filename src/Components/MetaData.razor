@@ -1,0 +1,23 @@
+﻿@using System.Text.Encodings.Web;
+
+@code {
+    [Parameter] public string Path { get; set; } = "";
+}
+
+@{
+    var segments = Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+    var allfolders = string.Join(" ▸ ", segments.Select(s => HtmlEncoder.Default.Encode(s).Trim()));
+    allfolders = allfolders == "" ? "Home" : allfolders;
+}
+
+<HeadContent>
+    <meta name="apple-mobile-web-app-title" content="@allfolders" />
+    <meta name="application-name" content="@allfolders" />
+    <meta name="description" content="@allfolders" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="@allfolders" />
+    <meta property="og:description" content="@allfolders" />
+</HeadContent>
+
+<PageTitle>▸ @allfolders</PageTitle>

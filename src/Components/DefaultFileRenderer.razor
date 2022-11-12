@@ -1,0 +1,9 @@
+﻿@code {
+    [Parameter] public Conesoft.Files.File Current { get; set; } = Conesoft.Files.Directory.Invalid.AsFile;
+    [Parameter] public string Path { get; set; } = "";
+}
+<td>
+    <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.Name</a>
+</td>
+<td></td>
+<td>@Current.Info.Length.Bytes().Humanize()</td>
