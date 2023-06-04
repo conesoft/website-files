@@ -6,20 +6,18 @@
 }
 
 <section>
-    <table>
-        <tbody>
-            @foreach (var directory in Root.Directories)
+    <ul>
+        @foreach (var directory in Root.Directories)
+        {
+            <Directory Path="@Path" Current="@directory" />
+        }
+        @foreach (var file in Root.Files)
+        {
+            var filters = new[] { ".flac.png" };
+            if(filters.Any(f => file.Name.EndsWith(f)) == false)
             {
-                <Directory Path="@Path" Current="@directory" />
+                <File Path="@Path" Current="@file" />
             }
-            @foreach (var file in Root.Files)
-            {
-                var filters = new[] { ".flac.png" };
-                if(filters.Any(f => file.Name.EndsWith(f)) == false)
-                {
-                    <File Path="@Path" Current="@file" />
-                }
-            }
-        </tbody>
-    </table>
+        }
+    </ul>
 </section>

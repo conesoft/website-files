@@ -21,7 +21,7 @@ public static class FileHandlerRoute
                 _ => "application/octet-stream"
             };
 
-            return Results.File(file.Path, contentType);
+            return Results.File(file.Path, contentType, enableRangeProcessing: true);
         });
     }
 }

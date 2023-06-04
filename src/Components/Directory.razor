@@ -3,10 +3,6 @@
     [Parameter] public string Path { get; set; } = "";
 }
 
-<tr>
-    <td>
-        <a href="@($"{Path}/{Current.Name}/")">@Current.Name</a>
-    </td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-</tr>
+<li>
+    <a href="@($"{Path}/{Current.Name}/")">@Current.Name</a>
+</li>
