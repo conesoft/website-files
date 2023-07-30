@@ -1,0 +1,24 @@
+section[data-authorized=true] {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    width: 10rem;
+    z-index: 1;
+}
+
+    section[data-authorized=true] form {
+        opacity: 0;
+        transition: opacity ease-in-out 0.333s;
+        pointer-events: none;
+    }
+
+    section[data-authorized=true]:focus-within form {
+        opacity: 1;
+        pointer-events: initial;
+    }
+
+section[data-authorized=false] {
+    position: absolute;
+    inset: 0;
+    place-content: center;
+}

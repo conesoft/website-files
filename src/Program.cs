@@ -1,7 +1,9 @@
+using Conesoft.Users;
 using Conesoft.Website.Files.Routes;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton(new FileHostingPath(Path: @"E:\Public"));
+builder.Services.AddUsers("Conesoft.Host.User", (Conesoft.Hosting.Host.GlobalStorage / "Users").Path);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
@@ -15,10 +17,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
-app.UseRouting();
+app.MapUsers();
 
-app.MapFileHandlerRoute();
+app.MapFileHandlerRoute(); 
+app.UseStaticFiles();
+
+app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

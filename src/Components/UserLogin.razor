@@ -1,0 +1,22 @@
+<AuthorizeView>
+    <Authorized>
+        <section data-authorized="true">
+            <button>@context.User?.Identity?.Name</button>
+            <form action="/user/logout" method="post">
+                <input type="hidden" name="redirectto" value="/">
+                <input type="submit" value="logout">
+            </form>
+        </section>
+    </Authorized>
+
+    <NotAuthorized>
+        <section data-authorized="false">
+            <form action="/user/login" method="post">
+                <input type="text" name="username" placeholder="username">
+                <input type="password" name="password" placeholder="password">
+                <input type="hidden" name="redirectto" value="/">
+                <input type="submit" value="login">
+            </form>
+        </section>
+    </NotAuthorized>
+</AuthorizeView>

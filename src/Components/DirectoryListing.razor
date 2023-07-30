@@ -6,18 +6,25 @@
 }
 
 <section>
-    <ul>
-        @foreach (var directory in Root.Directories)
-        {
-            <Directory Path="@Path" Current="@directory" />
-        }
-        @foreach (var file in Root.Files)
-        {
-            var filters = new[] { ".flac.png" };
-            if(filters.Any(f => file.Name.EndsWith(f)) == false)
-            {
-                <File Path="@Path" Current="@file" />
-            }
-        }
-    </ul>
+    <AuthorizeView>
+        <Authorized>
+            <ul>
+                @foreach (var directory in Root.Directories)
+                {
+                    <Directory Path="@Path" Current="@directory" />
+                }
+                @foreach (var file in Root.Files)
+                {
+                    var filters = new[] { ".flac.png" };
+                    if (filters.Any(f => file.Name.EndsWith(f)) == false)
+                    {
+                        <File Path="@Path" Current="@file" />
+                    }
+                }
+            </ul>
+        </Authorized>
+        <NotAuthorized>
+            <p>log in for access</p>
+        </NotAuthorized>
+    </AuthorizeView>
 </section>

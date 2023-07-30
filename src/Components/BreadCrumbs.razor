@@ -18,12 +18,16 @@
     <h1>
         <nav breadcrumbs green>
             <a href="/">⌂</a>
-            @foreach (var crumb in breadCrumbs)
-            {
-                @(" ▸ ")
+            <AuthorizeView>
+                <Authorized>
+                    @foreach (var crumb in breadCrumbs)
+                    {
+                        @(" ▸ ")
 
-                <a href="@crumb.Path">@crumb.Segment</a>
-            }
+                        <a href="@crumb.Path">@crumb.Segment</a>
+                    }
+                </Authorized>
+            </AuthorizeView>
         </nav>
     </h1>
 </header>
