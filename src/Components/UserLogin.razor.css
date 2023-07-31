@@ -1,12 +1,45 @@
 section[data-authorized=true] {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    width: 10rem;
+    position: fixed;
+    width: 12rem;
     z-index: 1;
+    background: #222;
+    box-shadow: 0 0 2rem black;
+}
+
+@media only screen and (min-aspect-ratio: 1) {
+    section[data-authorized=true] {
+        right: 1.5rem;
+        top: 1.5rem;
+        grid-template:
+            "picture name"
+            "menu menu"
+            / min-content 1fr
+    }
+}
+@media only screen and (max-aspect-ratio: 1) {
+    section[data-authorized=true] {
+        right: 1.5rem;
+        bottom: 2.5rem;
+        grid-template:
+            "menu menu"
+            "picture name"
+            / min-content 1fr
+    }
+}
+
+section[data-authorized=true] img {
+    width: 2rem;
+    aspect-ratio: 1;
+    grid-area: picture;
+}
+
+section[data-authorized=true] button {
+    grid-area: name;
 }
 
     section[data-authorized=true] form {
+        grid-area: menu;
+        height: 0;
         opacity: 0;
         transition: opacity ease-in-out 0.333s;
         pointer-events: none;
@@ -14,6 +47,7 @@ section[data-authorized=true] {
 
     section[data-authorized=true]:focus-within form {
         opacity: 1;
+        height: 2rem;
         pointer-events: initial;
     }
 
@@ -21,4 +55,8 @@ section[data-authorized=false] {
     position: absolute;
     inset: 0;
     place-content: center;
+    grid-template-columns: max-content max-content;
+}
+section[data-authorized=false] img {
+    height: 6rem;
 }

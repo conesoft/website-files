@@ -24,7 +24,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.MapBlazorHub();
+app.MapBlazorHub(options =>
+{
+    options.WebSockets.CloseTimeout = TimeSpan.MaxValue;
+});
 app.MapFallbackToPage("/_Host");
 
 app.Run();

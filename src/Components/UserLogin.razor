@@ -1,6 +1,7 @@
 <AuthorizeView>
     <Authorized>
         <section data-authorized="true">
+            <img src="/user/@(context.User?.Identity?.Name).jpg?@Random.Shared.Next()" alt="profile picture" />
             <button>@context.User?.Identity?.Name</button>
             <form action="/user/logout" method="post">
                 <input type="hidden" name="redirectto" value="/">
@@ -11,6 +12,7 @@
 
     <NotAuthorized>
         <section data-authorized="false">
+            <img src="/user/--noname--.jpg" alt="profile picture" />
             <form action="/user/login" method="post">
                 <input type="text" name="username" placeholder="username">
                 <input type="password" name="password" placeholder="password">
