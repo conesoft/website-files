@@ -1,6 +1,8 @@
 ﻿@page "/{*Path}"
 
-@using Conesoft.Website.Files.Components;
+@using Conesoft.Website.Files.Components
+
+@inject NavigationManager navigation
 
 @code {
     [Parameter] public string? Path { get; set; }
@@ -8,10 +10,27 @@
     protected override void OnParametersSet() => Path ??= "";
 }
 
+@{
+    var url = new Uri(navigation.Uri).PathAndQuery;
+}
+@if(string.IsNullOrEmpty(url) || url.EndsWith("/"))
+{
+    <BreadCrumbs Path="@Path" />
 
-<BreadCrumbs Path="@Path" />
+    <MetaData Path="@Path" />
+    <DirectoryListing Path="@Path" />
 
-<MetaData Path="@Path" />
-<DirectoryListing Path="@Path" />
-
-<UserLogin />
+    <UserLogin />
+} 
+else
+{
+    @if(url.EndsWith(".mkv"))
+    {
+        <title style="display: none">@url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
+        <video src="/*@url" controls autoplay></video>
+    }
+    else
+    {
+        navigation.NavigateTo($"/*{url}");
+    }
+}

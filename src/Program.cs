@@ -28,6 +28,7 @@ app.MapBlazorHub(options =>
 {
     options.WebSockets.CloseTimeout = TimeSpan.MaxValue;
 });
+app.MapFallbackToPage("/{*Path}", "/_Host");
 app.MapFallbackToPage("/_Host");
 
 app.Run();

@@ -6,7 +6,7 @@ public static class FileHandlerRoute
 {
     public static void MapFileHandlerRoute(this WebApplication app)
     {
-        app.MapGet("/{*route:regex(.*[^/]$)}", (FileHostingPath path, string route) =>
+        app.MapGet("/*/{*route:regex(.*[^/]$)}", (FileHostingPath path, string route) =>
         {
             var file = (path.Directory / route).AsFile;
             if(file.Exists == false)

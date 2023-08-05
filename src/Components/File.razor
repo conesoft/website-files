@@ -11,9 +11,8 @@
 }
 
 @{
-    //var type = Type.GetType($"Conesoft.Website.Files.Components.{CleanUp(Current.Extension)}FileRenderer")
-    //    ?? typeof(DefaultFileRenderer);
-    var type = typeof(DefaultFileRenderer);
+    var type = Type.GetType($"Conesoft.Website.Files.Components.{CleanUp(Current.Extension)}FileRenderer")
+        ?? typeof(DefaultFileRenderer);
     var parameters = new Dictionary<string, object>
             {
                 ["Current"] = Current,
