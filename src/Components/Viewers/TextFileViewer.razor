@@ -1,0 +1,28 @@
+﻿@inject FileHostingPath path
+
+<BreadCrumbs Path="@Url" />
+
+<MetaData Path="@Url" />
+
+<pre>
+    @text
+</pre>
+
+@code {
+    [Parameter]
+    public string Url { get; set; } = "";
+
+    string title = "";
+    string text = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var file = (path.Directory / Url).AsFile;
+
+        title = file.Name;
+
+        text = await file.ReadText() ?? "";
+
+        await base.OnParametersSetAsync();
+    }
+}

@@ -1,0 +1,14 @@
+img {
+    width: 1rem;
+    place-self: center;
+    opacity: 0.7;
+}
+
+li {
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+}
+
+a {
+    text-align: left !important;
+}

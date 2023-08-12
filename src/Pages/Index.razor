@@ -31,6 +31,10 @@ else
     {
         <VideoPlayer Url="@Path" />
     }
+    else if(Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
+    {
+        <TextFileViewer Url="@Path" />
+    }
     else
     {
         if(string.IsNullOrWhiteSpace(_path) == false) {
@@ -45,7 +49,7 @@ else
     {
         if (firstRender)
         {
-            if (navigation.Uri.EndsWith(".jpg") || navigation.Uri.EndsWith(".txt"))
+            if (navigation.Uri.EndsWith(".jpg"))
             {
                 _path = navigation.BaseUri + "*/" + Path;
                 navigation.NavigateTo(_path, forceLoad: true, replace: false);

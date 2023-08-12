@@ -1,0 +1,7 @@
+pre {
+    max-width: 60rem;
+    place-self: stretch center;
+    user-select: text;
+    overflow-x: auto;
+    background: #222;
+}
