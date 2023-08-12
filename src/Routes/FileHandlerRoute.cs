@@ -11,7 +11,7 @@ public static class FileHandlerRoute
             var file = (path.Directory / route).AsFile;
             if(file.Exists == false)
             {
-                return Results.Redirect(route + "/");
+                return Results.NotFound();
             }
 
             new FileExtensionContentTypeProvider().TryGetContentType(file.Name, out var contentType);

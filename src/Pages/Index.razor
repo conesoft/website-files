@@ -1,7 +1,9 @@
 ﻿@page "/{*Path}"
 
 @using Conesoft.Website.Files.Components
+@using Conesoft.Website.Files.Components.Viewers
 
+@inject FileHostingPath path
 @inject NavigationManager navigation
 
 @code {
@@ -12,8 +14,9 @@
 
 @{
     var url = new Uri(navigation.Uri).PathAndQuery;
+    var file = (path.Directory / (Path ?? "")).AsFile;
 }
-@if(string.IsNullOrEmpty(url) || url.EndsWith("/"))
+@if (file.Exists == false)
 {
     <BreadCrumbs Path="@Path" />
 
@@ -24,13 +27,30 @@
 } 
 else
 {
-    @if(url.EndsWith(".mkv"))
+    @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
     {
-        <title style="display: none">@url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
-        <video src="/*@url" controls autoplay></video>
+        <VideoPlayer Url="@Path" />
     }
     else
     {
-        navigation.NavigateTo($"/*{url}");
+        if(string.IsNullOrWhiteSpace(_path) == false) {
+            <p>go to: @_path</p>
+        }
+    }
+}
+
+@code {
+    string _path = "";
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (navigation.Uri.EndsWith(".jpg") || navigation.Uri.EndsWith(".txt"))
+            {
+                _path = navigation.BaseUri + "*/" + Path;
+                navigation.NavigateTo(_path, forceLoad: true, replace: false);
+            }
+        }
+        return base.OnAfterRenderAsync(firstRender);
     }
 }

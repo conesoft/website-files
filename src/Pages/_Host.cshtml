@@ -18,17 +18,45 @@
     <base href="~/" />
     <link rel="stylesheet" type="text/css" href="https://cdn.conesoft.net/style.css?v=7a8de4d2b5e523d3fb18be1a9c7960f5">
     <link rel="stylesheet" type="text/css" href="@(AppDomain.CurrentDomain.FriendlyName).styles.css" />
-    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+    <component type="typeof(HeadOutlet)" render-mode="Server" />
+    <style>
+        body:has([fullscreen-viewer]) *:not([fullscreen-viewer]) {
+            display: none;
+        }
+
+        html:has([fullscreen-viewer]) {
+            scrollbar-gutter: auto;
+        }
+
+        body:has([fullscreen-viewer]) {
+            grid-template-rows: initial;
+            grid-template: "fullscreen-viewer";
+            height: 100%;
+            place-items: stretch;
+        }
+
+        [fullscreen-viewer] {
+            grid-area: fullscreen-viewer;
+            width: 100cqw;
+            height: 100cqh;
+        }
+
+    </style>
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <component type="typeof(App)" render-mode="Server" />
     <script src="_framework/blazor.server.js" autostart="false"></script>
     <script>
-        Blazor.start({
-            reconnectionHandler: {
-                onConnectionDown: (options, error) => document.location.reload()
-            }
-        });
+        if (navigator.userAgent.search("Firefox") > 0) {
+            Blazor.start();
+        }
+        else {
+            Blazor.start({
+                reconnectionHandler: {
+                    onConnectionDown: (options, error) => document.location.reload()
+                }
+            });
+        }
     </script>
 
     <footer>

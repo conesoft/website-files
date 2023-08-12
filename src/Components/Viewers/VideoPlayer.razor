@@ -1,0 +1,24 @@
+﻿@inject IJSRuntime js
+
+<title style="display: none">@Url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
+<video fullscreen-viewer src="/*/@Url" controls autoplay></video>
+
+@code {
+    [Parameter]
+    public string Url { get; set; } = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var title = System.IO.Path.GetFileNameWithoutExtension(string.Join(' ', Uri.UnescapeDataString(Url.Split("/").Reverse().FirstOrDefault() ?? "").Split(' ').Skip(1)));
+            title = title.StartsWith("- ") ? title[2..] : title;
+            var artist = Uri.UnescapeDataString(string.Join(": ", Url.Split('/',StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Skip(1).Reverse().Skip(2).Reverse())) + ": " + Uri.UnescapeDataString(Url.Split("/").Reverse().Skip(1).FirstOrDefault() ?? "");
+            var image = $"/*/{Url}:thumbnail-x256.jpg";
+
+        var module = await js.InvokeAsync<IJSObjectReference>("import", "/Components/Viewers/VideoPlayer.razor.js");
+            await module.InvokeVoidAsync("updateMediaSession", title, artist, image);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
