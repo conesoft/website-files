@@ -1,0 +1,33 @@
+section {
+    display: grid;
+    place-items: stretch;
+    height: 2rem;
+    margin-top: 2rem;
+}
+
+section * {
+    grid-row: 1;
+    grid-column: 1;
+}
+
+meter {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    appearance: none;
+    background: #111;
+    position: relative;
+}
+
+meter span {
+    position: absolute;
+    height: 100%;
+    opacity: 0.7;
+}
+
+section > span {
+    background-color: transparent;
+    place-self: center;
+    z-index: 1;
+    mix-blend-mode: plus-lighter;
+}

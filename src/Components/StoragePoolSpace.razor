@@ -1,0 +1,24 @@
+﻿<AuthorizeView>
+    <Authorized>
+        @if (StoragePool.Current is StoragePool pool)
+        {
+            <section>
+                @{
+                    var value = (int)(100 * pool.AllocatedSize / pool.Size);
+                    var low = 75;
+                    var high = 90;
+                    var color = value > high ? "darkred" : (value > low ? "darkorange" : "darkgreen");
+                }
+                <meter min="0"
+                       max="100"
+                       low="@low"
+                       high="@high"
+                       optimum="0"
+                       value="@value">
+                    <span style="width: @value%; background-color: @color;"></span>
+                </meter>
+                <span style="color: @color">@(((long)pool.Size - (long)pool.AllocatedSize).Bytes()) left</span>
+            </section>
+        }
+    </Authorized>
+</AuthorizeView>
