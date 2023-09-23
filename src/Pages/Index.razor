@@ -16,32 +16,35 @@
     var url = new Uri(navigation.Uri).PathAndQuery;
     var file = (path.Directory / (Path ?? "")).AsFile;
 }
-@if (file.Exists == false)
+@if (file.Name != "favicon.ico")
 {
-    <BreadCrumbs Path="@Path" />
-
-    <MetaData Path="@Path" />
-    <DirectoryListing Path="@Path" />
-
-    <StoragePoolSpace/>
-
-    <Conesoft.Blazor.Components.UserLogin />
-} 
-else
-{
-    @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
+    @if (file.Exists == false)
     {
-        <VideoPlayer Url="@Path" />
-    }
-    else if(Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
-    {
-        <TextFileViewer Url="@Path" />
+        <BreadCrumbs Path="@Path" />
+
+        <MetaData Path="@Path" />
+        <DirectoryListing Path="@Path" />
+
+        <StoragePoolSpace/>
     }
     else
     {
-        if(string.IsNullOrWhiteSpace(_path) == false) {
-            <p>go to: @_path</p>
+        @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
+        {
+            <VideoPlayer Url="@Path" />
         }
+        else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
+        {
+            <TextFileViewer Url="@Path" />
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(_path) == false)
+            {
+                <p>go to: @_path</p>
+            }
+        }
+
     }
 }
 

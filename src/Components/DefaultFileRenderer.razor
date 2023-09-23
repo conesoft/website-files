@@ -6,5 +6,8 @@
     @*<a href="@($"/*/{Path}/{Current.Name}")" target="_top">@Current.Name</a>*@
     <img src="/file-icon.svg" />
     <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.Name</a>
-    <aside>@Current.Info.Length.Bytes().Humanize()</aside>
+    <aside>
+        @Current.Info.Length.Bytes().Humanize()
+        <a href="*/@($"{Path}/{Current.Name}")" download="">▼</a>
+    </aside>
 </li>

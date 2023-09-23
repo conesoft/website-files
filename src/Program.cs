@@ -2,6 +2,7 @@ using Conesoft.Users;
 using Conesoft.Website.Files.Routes;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton(new FileHostingPath(Path: @"E:\Public"));
 builder.Services.AddUsers("Conesoft.Host.User", (Conesoft.Hosting.Host.GlobalStorage / "Users").Path);
 builder.Services.AddRazorPages();
@@ -28,6 +29,7 @@ app.MapBlazorHub(options =>
 {
     options.WebSockets.CloseTimeout = TimeSpan.MaxValue;
 });
+app.MapRazorPages();
 app.MapFallbackToPage("/{*Path}", "/_Host");
 app.MapFallbackToPage("/_Host");
 

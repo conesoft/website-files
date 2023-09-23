@@ -1,4 +1,6 @@
-﻿@code {
+﻿@using Conesoft.Blazor.Components
+
+@code {
     [Parameter] public string Path { get; set; } = "";
 
     public record BreadCrumb(string Segment, string Path);
@@ -14,20 +16,12 @@
     )).ToArray();
 }
 
-<header>
-    <h1>
-        <nav breadcrumbs green>
-            <a href="/">⌂</a>
-            <AuthorizeView>
-                <Authorized>
-                    @foreach (var crumb in breadCrumbs)
-                    {
-                        @(" ▸ ")
+<UserHeaderNav NavClass="breadcrumbs">
+    <a href="/">⌂</a>
+    @foreach (var crumb in breadCrumbs)
+    {
+        @(" ▸ ")
 
-                        <a href="@crumb.Path">@crumb.Segment</a>
-                    }
-                </Authorized>
-            </AuthorizeView>
-        </nav>
-    </h1>
-</header>
+        <a href="@crumb.Path">@crumb.Segment</a>
+    }
+</UserHeaderNav>
