@@ -1,2 +1,127 @@
-video {
+nav {
+    width: auto;
+    place-self: end center;
+    place-content: center;
+    height: auto;
+    padding: 5rem;
+    opacity: 0.01;
+    z-index: 1;
+    transition: all 0.33s linear;
+    grid-template:
+        "mute     ........ backward play     forward  ........ maximize" auto
+        "........ ........ ........ ........ ........ ........ ........" 0rem
+        "progress progress progress progress progress progress progress" 2rem
+        / 1fr 2rem 1fr 1fr 1fr 2rem 1fr
 }
+
+#mute {
+    grid-area: mute;
+}
+
+#backward {
+    grid-area: backward;
+}
+
+#play {
+    grid-area: play;
+}
+
+#forward {
+    grid-area: forward;
+}
+
+#maximize {
+    grid-area: maximize;
+}
+
+#progress {
+    grid-area: progress;
+    place-self: stretch stretch;
+    grid-template: "all";
+}
+
+    #progress > * {
+        grid-area: all;
+    }
+
+#progress-background {
+    background: rgb(255, 255, 255, 0.25);
+    backdrop-filter: saturate(150%) blur(2rem);
+    transition: all 0.33s linear;
+    opacity: 0.3;
+}
+
+#progress:hover #progress-background {
+    opacity: 1;
+}
+
+#progress input {
+    
+    cursor: ew-resize;
+}
+
+#progress :is(progress, input, p) {
+    z-index: 1;
+}
+
+#progress p {
+    padding-inline: 1rem;
+    color: var(--accent-color);
+    mix-blend-mode: difference;
+}
+
+#progress-background,
+progress::-webkit-progress-value {
+    border-radius: 1rem;
+}
+
+#current {
+    place-self: center start;
+}
+
+#runtime {
+    place-self: center end;
+}
+
+#changing {
+    grid-area: changing;
+    place-self: center center;
+}
+
+nav p {
+    opacity: 0.7;
+    transition: all 0.33s linear;
+}
+
+    nav p:hover {
+        opacity: 1;
+    }
+
+nav:hover {
+    opacity: 1;
+}
+
+nav button {
+    width: 8rem;
+    height: 8rem;
+    border-radius: 4rem;
+    background: rgb(255, 255, 255, 0.25);
+    backdrop-filter: saturate(150%) blur(2rem);
+    color: var(--color);
+    opacity: 0.3;
+    font-size: 3rem;
+    transition: all 0s linear;
+    transition: opacity 0.333s linear;
+}
+
+    nav button:hover {
+        background: rgb(255, 255, 255, 0.25) !important;
+        box-shadow: none !important;
+        backdrop-filter: saturate(150%) blur(2rem);
+        opacity: 1;
+    }
+
+    nav button :is(svg, img) {
+        max-width: 2rem;
+        place-self: center;
+    }

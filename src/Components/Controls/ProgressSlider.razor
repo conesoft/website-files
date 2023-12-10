@@ -1,0 +1,65 @@
+﻿<div class="slider" @attributes="@InputAttributes">
+    <div class="background"></div>
+    <progress min=0 max=100 value="@value"></progress>
+    <input type=range min=0 max=100 step=0.1
+        @bind-value=value
+        @bind-value:event="oninput"
+        @bind-value:after="Refresh"
+        @onmousedown="MouseDown"
+    @onmouseup="MouseUp">
+    <p class="lefttext">@LeftText</p>
+    <p class="middletext">@MiddleText</p>
+    <p class="righttext">@RightText</p>
+</div>
+
+@code {
+    private double value;
+    private bool scrubbing;
+
+    [Parameter]
+    public double Value {
+        get => value;
+        set
+        {
+            if(scrubbing == false)
+            {
+                this.value = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public string LeftText { get; set; }
+    [Parameter]
+    public string MiddleText { get; set; }
+    [Parameter]
+    public string RightText { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> InputAttributes { get; set; }
+
+    [Parameter]
+    public Func<double?, Task> Scrubbing { get; set; }
+
+    public async Task MouseDown()
+    {
+        scrubbing = true;
+    }
+
+    public async Task MouseUp()
+    {
+        if(Scrubbing != null)
+        {
+            await Scrubbing(null);
+        }
+        scrubbing = false;
+    }
+
+    public async Task Refresh()
+    {
+        if (Scrubbing != null)
+        {
+            await Scrubbing(value);
+        }
+    }
+}

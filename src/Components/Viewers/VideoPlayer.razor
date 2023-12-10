@@ -1,11 +1,166 @@
-﻿@inject IJSRuntime js
+﻿@using Blazored.Video.Support
+@using Blazored.Video
+
+@inject IJSRuntime js
 
 <title style="display: none">@Url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
-<video fullscreen-viewer src="/*/@Url" controls autoplay></video>
+@* <video fullscreen-viewer src="/*/@Url" controls autoplay></video> *@
+
+<BlazoredVideo @ref=video style="pointer-events: none" fullscreen-viewer autoplay VideoEventOptions="options" DurationChange="OnDurationChange" TimeUpdate="OnTimeUpdate">
+    <source src="/*/@Url" />
+</BlazoredVideo>
+
+<nav fullscreen-viewer>
+    @if (mute == false)
+    {
+        <button id="mute" @onclick=Mute>
+            <img src="https://cdn.conesoft.net/icons/mute.svg" />
+        </button>
+    }
+    else
+    {
+        <button id="mute" @onclick=Unmute>
+            <img src="https://cdn.conesoft.net/icons/unmute.svg" />
+        </button>
+    }
+    <button id="backward" @onclick=BackwardSkip>
+        <img src="https://cdn.conesoft.net/icons/skip-backward.svg" />
+    </button>
+    @if (playing == false)
+    {
+        <button id="play" @onclick=Play>
+            <img src="https://cdn.conesoft.net/icons/play.svg" />
+        </button>
+    }
+    else
+    {
+        <button id="play" @onclick=Pause>
+            <img src="https://cdn.conesoft.net/icons/pause.svg" />
+        </button>
+    }
+    <button id="forward" @onclick=ForwardSkip>
+        <img src="https://cdn.conesoft.net/icons/skip-forward.svg" />
+    </button>
+    @if (fullscreen == false)
+    {
+        <button id="maximize" @onclick=EnterFullscreen>
+            <img src="https://cdn.conesoft.net/icons/enter-fullscreen.svg" />
+        </button>
+    }
+    else
+    {
+        <button id="maximize" @onclick=ExitFullscreen>
+            <img src="https://cdn.conesoft.net/icons/exit-fullscreen.svg" />
+        </button>
+    }
+
+    <Conesoft.Website.Files.Components.Controls.ProgressSlider
+        LeftText=@($"{currentTime:hh\\:mm\\:ss}")
+        MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
+        RightText=@($"{runTime:hh\\:mm\\:ss}")
+        Value="@(100 * currentTime / runTime)"
+        Scrubbing="Scrubbing"
+        style="grid-area: progress" />
+</nav>
 
 @code {
     [Parameter]
     public string Url { get; set; } = "";
+
+    BlazoredVideo video;
+    bool playing = true;
+    bool fullscreen = false;
+    bool mute = false;
+    TimeSpan currentTime = new();
+    TimeSpan runTime = new();
+    TimeSpan? scrubbingTime = null;
+    bool selecting = false;
+    double selectedRange = 0;
+    double? scrubbingValue;
+
+    Dictionary<VideoEvents, VideoStateOptions> options = new()
+        {
+            [VideoEvents.TimeUpdate] = new VideoStateOptions { CurrentTime = true, Duration = true },
+            [VideoEvents.DurationChange] = new VideoStateOptions { Duration = true }
+        };
+
+    public void OnTimeUpdate(VideoState state)
+    {
+        currentTime = TimeSpan.FromSeconds(state.CurrentTime);
+        if (runTime == TimeSpan.Zero)
+        {
+            OnDurationChange(state);
+        }
+        StateHasChanged();
+    }
+
+    public void OnDurationChange(VideoState state)
+    {
+        runTime = TimeSpan.FromSeconds(state.Duration);
+        StateHasChanged();
+    }
+
+    public async Task Scrubbing(double? value)
+    {
+        if(value.HasValue)
+        {
+            scrubbingTime = runTime * value.Value / 100;
+        }
+        else
+        {
+            if(scrubbingTime.HasValue)
+            {
+                await video.SetCurrentTimeAsync(scrubbingTime!.Value.TotalSeconds);
+            }
+            scrubbingTime = null;
+        }
+    }
+
+    public async Task Play()
+    {
+        await video.StartPlayback();
+        playing = true;
+    }
+
+    public async Task Pause()
+    {
+        await video.PausePlayback();
+        playing = false;
+    }
+
+    public async Task BackwardSkip()
+    {
+        await video.SetCurrentTimeAsync(-10 + await video.GetCurrentTimeAsync());
+    }
+
+    public async Task ForwardSkip()
+    {
+        await video.SetCurrentTimeAsync(10 + await video.GetCurrentTimeAsync());
+    }
+
+    public async Task EnterFullscreen()
+    {
+        await js.InvokeVoidAsync("document.documentElement.requestFullscreen");
+        fullscreen = true;
+    }
+
+    public async Task ExitFullscreen()
+    {
+        await js.InvokeVoidAsync("document.exitFullscreen");
+        fullscreen = false;
+    }
+
+    public async Task Mute()
+    {
+        await video.SetVolumeAsync(0);
+        mute = true;
+    }
+
+    public async Task Unmute()
+    {
+        await video.SetVolumeAsync(1);
+        mute = false;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -13,10 +168,10 @@
         {
             var title = System.IO.Path.GetFileNameWithoutExtension(string.Join(' ', Uri.UnescapeDataString(Url.Split("/").Reverse().FirstOrDefault() ?? "").Split(' ').Skip(1)));
             title = title.StartsWith("- ") ? title[2..] : title;
-            var artist = Uri.UnescapeDataString(string.Join(": ", Url.Split('/',StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Skip(1).Reverse().Skip(2).Reverse())) + ": " + Uri.UnescapeDataString(Url.Split("/").Reverse().Skip(1).FirstOrDefault() ?? "");
+            var artist = Uri.UnescapeDataString(string.Join(": ", Url.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Skip(1).Reverse().Skip(2).Reverse())) + ": " + Uri.UnescapeDataString(Url.Split("/").Reverse().Skip(1).FirstOrDefault() ?? "");
             var image = $"/*/{Url}:thumbnail-x256.jpg";
 
-        var module = await js.InvokeAsync<IJSObjectReference>("import", "/Components/Viewers/VideoPlayer.razor.js");
+            var module = await js.InvokeAsync<IJSObjectReference>("import", "/Components/Viewers/VideoPlayer.razor.js");
             await module.InvokeVoidAsync("updateMediaSession", title, artist, image);
         }
         await base.OnAfterRenderAsync(firstRender);

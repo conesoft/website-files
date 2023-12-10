@@ -1,12 +1,15 @@
 ﻿@code {
     [Parameter] public Conesoft.Files.Directory Current { get; set; } = Conesoft.Files.Directory.Invalid;
     [Parameter] public string Path { get; set; } = "";
+
+    private string CurrentPath => $"{Path}/{Current.Name}/";
+    private string CurrentPathForDownload => $"/*/{(CurrentPath.StartsWith("/") ? CurrentPath[1..] : CurrentPath)}";
 }
 
 <li>
     <img src="/folder-icon.svg" />
-    <a href="@($"{Path}/{Current.Name}/")">@Current.Name</a>
+    <a href="@CurrentPath">@Current.Name</a>
     <aside>
-        <a href="*/@($"{Path}/{Current.Name}/")" download="">▼</a>
+        <a href="@CurrentPathForDownload" download="">▼</a>
     </aside>
 </li>

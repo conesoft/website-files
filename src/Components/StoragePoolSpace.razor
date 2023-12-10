@@ -7,7 +7,7 @@
                     var value = (int)(100 * pool.AllocatedSize / pool.Size);
                     var low = 75;
                     var high = 90;
-                    var color = value > high ? "darkred" : (value > low ? "darkorange" : "darkgreen");
+                    var color = value > high ? "var(--danger-color)" : (value > low ? "var(--warning-color)" : "var(--accent-color)");
                 }
                 <meter min="0"
                        max="100"
@@ -15,9 +15,9 @@
                        high="@high"
                        optimum="0"
                        value="@value">
-                    <span style="width: @value%; background-color: @color;"></span>
+                    <span style="width: @value%; color: @color;"></span>
+                    <p style="color: @color">@(((long)pool.Size - (long)pool.AllocatedSize).Bytes()) left</p>
                 </meter>
-                <span style="color: @color">@(((long)pool.Size - (long)pool.AllocatedSize).Bytes()) left</span>
             </section>
         }
     </Authorized>

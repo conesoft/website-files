@@ -5,15 +5,15 @@
     Conesoft.Files.Directory Root => fileHostingPath.Directory / Path;
 }
 
-<section>
-    <AuthorizeView>
-        <Authorized>
+<AuthorizeView>
+    <Authorized>
+        <section>
             <ul>
-                @foreach (var directory in Root.Directories)
+                @foreach (var directory in Root.Directories.OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer()))
                 {
                     <Directory Path="@Path" Current="@directory" />
                 }
-                @foreach (var file in Root.Files)
+                @foreach (var file in Root.Files.OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer()))
                 {
                     var filters = new[] { ".flac.png" };
                     if (filters.Any(f => file.Name.EndsWith(f)) == false)
@@ -22,9 +22,6 @@
                     }
                 }
             </ul>
-        </Authorized>
-        <NotAuthorized>
-            <p>log in for access</p>
-        </NotAuthorized>
-    </AuthorizeView>
-</section>
+        </section>
+    </Authorized>
+</AuthorizeView>

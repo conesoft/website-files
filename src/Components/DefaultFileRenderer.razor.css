@@ -5,17 +5,14 @@ img {
 }
 
 li {
-    grid-template-columns: auto 1fr auto;
-    gap: 0.5rem;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 1rem;
+    padding-inline: 1rem;
     place-items: center stretch;
 }
 
 aside {
     opacity: 0.7;
-    margin: 0 1rem;
-    place-items: center;
-    display: flex;
-    gap: 1rem;
     transition: all linear 0.333s;
 }
 

@@ -1,0 +1,85 @@
+.slider {
+    display: grid;
+    grid-template: "all";
+    place-items: center;
+
+    --height: 2rem;
+    --radius: calc(var(--height) / 2);
+    --glow-radius: 1rem;
+}
+
+    .slider > * {
+        grid-area: all;
+        appearance: none;
+        width: 100%;
+    }
+
+.background {
+    background: rgb(255, 255, 255, 0.25);
+    backdrop-filter: saturate(150%) blur(2rem);
+    height: var(--height);
+    border-radius: var(--radius);
+    opacity: 0.3;
+    transition: opacity 0.333s linear;
+}
+
+    .background:hover {
+        opacity: 1;
+    }
+
+progress {
+    height: 0;
+    border-radius: var(--radius);
+    padding-inline: var(--radius);
+    z-index: 1;
+}
+
+    progress::-webkit-progress-value {
+        appearance: none;
+        height: 0;
+        outline: var(--radius) solid var(--accent-color);
+        border-radius: var(--radius);
+        border: 0.00001rem solid var(--accent-color); /* hack to get round borders */
+        box-shadow: 0 0 var(--glow-radius) var(--radius) var(--accent-color);
+    }
+
+input, input:hover, input:focus {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    z-index: 1;
+}
+
+    input::-webkit-slider-thumb {
+        appearance: none;
+        width: calc(var(--radius) * 2);
+        height: calc(var(--radius) * 2);
+        border-radius: var(--radius);
+        cursor: ew-resize;
+        background-color: var(--accent-color);
+        transition: all 0.333s linear;
+    }
+
+        input::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 var(--glow-radius) var(--accent-color);
+        }
+
+p {
+    padding-inline: var(--radius);
+    color: var(--accent-color);
+    mix-blend-mode: difference;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.lefttext {
+    text-align: left;
+}
+
+.middletext {
+    text-align: center;
+}
+
+.righttext {
+    text-align: right;
+}

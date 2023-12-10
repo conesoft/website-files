@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>Conesoft.Website.Files</RootNamespace>
+		<UseRazorSourceGenerator>false</UseRazorSourceGenerator>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,13 +17,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Blazored.Video" Version="1.0.1" />
 		<PackageReference Include="Conesoft.Hosting" Version="1.0.1" />
 		<PackageReference Include="Conesoft.Files" Version="1.8.2" />
+		<PackageReference Include="Conesoft.Tools" Version="0.0.3" />
 		<PackageReference Include="Conesoft.Users" Version="2.2.9" />
 		<PackageReference Include="Conesoft.ZipFolder" Version="0.1.5" />
 		<PackageReference Include="FlacLibSharp" Version="3.2.1" />
 		<PackageReference Include="Humanizer.Core" Version="2.14.1" />
-		<PackageReference Include="System.Management" Version="7.0.2" />
+		<PackageReference Include="System.Management" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
