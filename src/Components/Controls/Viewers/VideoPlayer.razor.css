@@ -4,7 +4,7 @@ nav {
     place-content: center;
     height: auto;
     padding: 5rem;
-    opacity: 0.01;
+    opacity: 0.01; /* to kill the hw video hw acceleration darkness bug */
     z-index: 1;
     transition: all 0.33s linear;
     grid-template:
@@ -13,6 +13,10 @@ nav {
         "progress progress progress progress progress progress progress" 2rem
         / 1fr 2rem 1fr 1fr 1fr 2rem 1fr
 }
+
+    nav:not(:hover) * {
+        opacity: 0; /* to kill the hw video hw acceleration darkness bug */
+    }
 
 #mute {
     grid-area: mute;
@@ -56,7 +60,6 @@ nav {
 }
 
 #progress input {
-    
     cursor: ew-resize;
 }
 

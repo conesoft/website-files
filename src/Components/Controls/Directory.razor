@@ -2,7 +2,7 @@
     [Parameter] public Conesoft.Files.Directory Current { get; set; } = Conesoft.Files.Directory.Invalid;
     [Parameter] public string Path { get; set; } = "";
 
-    private string CurrentPath => $"{Path}/{Current.Name}/";
+    private string CurrentPath => $"{Path}/{Current.Name}";
     private string CurrentPathForDownload => $"/*/{(CurrentPath.StartsWith("/") ? CurrentPath[1..] : CurrentPath)}";
 }
 

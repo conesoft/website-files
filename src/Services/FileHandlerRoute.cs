@@ -2,17 +2,17 @@
 using Microsoft.AspNetCore.StaticFiles;
 using System.Runtime.CompilerServices;
 
-namespace Conesoft.Website.Files.Routes;
+namespace Conesoft.Website.Files.Services;
 
 public static class FileHandlerRoute
 {
     public static void MapFileHandlerRoute(this WebApplication app)
     {
         //        app.MapGet("/*/{*route:regex(.*[^/]$)}", (FileHostingPath path, string route) =>
-        app.MapGet("/*/{*route}", async (FileHostingPath path, string route, HttpContext context) =>
+        app.MapGet("/*/{*route}", (FileHostingPath path, string route, HttpContext context) =>
         {
             var file = (path.Directory / route).AsFile;
-            var directory = (path.Directory / route);
+            var directory = path.Directory / route;
             if (file.Exists == false && directory.Exists == false)
             {
                 return Results.NotFound();

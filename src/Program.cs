@@ -1,36 +1,24 @@
-using Conesoft.Users;
-using Conesoft.Website.Files.Routes;
+using Conesoft.Hosting;
+using Conesoft.Website.Files.Components;
+using Conesoft.Website.Files.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddHttpClient();
-builder.Services.AddSingleton(new FileHostingPath(Path: @"E:\Public"));
-builder.Services.AddUsers("Conesoft.Host.User", (Conesoft.Hosting.Host.GlobalStorage / "Users").Path);
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+
+builder.Services
+    .AddHttpClient()
+    .AddSingleton(new FileHostingPath(Path: @"E:\Public"))
+    .AddUsersWithStorage()
+    .AddRazorComponents().AddInteractiveServerComponents();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+app
+    .UseStaticFiles()
+    .UseRouting() // fixes routes for Scoped CSS as well as static files
+    .UseAntiforgery();
 
-app.UseHttpsRedirection();
-
-app.MapUsers();
-
-app.MapFileHandlerRoute(); 
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.MapBlazorHub(options =>
-{
-    options.WebSockets.CloseTimeout = TimeSpan.MaxValue;
-});
-app.MapRazorPages();
-app.MapFallbackToPage("/{*Path}", "/_Host");
-app.MapFallbackToPage("/_Host");
+app.MapUsersWithStorage();
+app.MapFileHandlerRoute();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();

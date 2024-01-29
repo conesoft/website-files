@@ -1,0 +1,49 @@
+﻿@page "/{*Path}"
+
+@using Conesoft.Website.Files.Components.Controls
+@using Conesoft.Website.Files.Components.Controls.Viewers
+
+@inject FileHostingPath path
+@inject NavigationManager navigation
+
+@code {
+    [Parameter] public string? Path { get; set; }
+
+    protected override void OnParametersSet() => Path ??= "";
+}
+
+@{
+    var url = new Uri(navigation.Uri).PathAndQuery;
+    var file = (path.Directory / (Path ?? "")).AsFile;
+}
+
+<MetaData Path="@Path" />
+
+@if (file.Exists == false)
+{
+    <BreadCrumbs Path="@Path" />
+
+    <main>
+        <DirectoryListing Path="@Path" />
+
+        <StoragePoolSpace />
+    </main>
+}
+else
+{
+    @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
+    {
+        <VideoPlayer Url="@Path" />
+    }
+    else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
+    {
+        <TextFileViewer Url="@Path" />
+    }
+    else
+    {
+        if (string.IsNullOrWhiteSpace(Path) == false)
+        {
+            <p>go to: <a href="/*/@Path">@Path</a></p>
+        }
+    }
+}
