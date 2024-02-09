@@ -1,4 +1,6 @@
-﻿@code {
+﻿@using System.Reflection
+@using Conesoft.Website.Files.Components.Controls.TypeRenderers
+@code {
     [Parameter] public Conesoft.Files.File Current { get; set; } = Conesoft.Files.Directory.Invalid.AsFile;
     [Parameter] public string Path { get; set; } = "";
 
@@ -11,8 +13,15 @@
 }
 
 @{
-    var type = Type.GetType($"Conesoft.Website.Files.Components.{CleanUp(Current.Extension)}FileRenderer")
-        ?? typeof(DefaultFileRenderer);
+    var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name.EndsWith("TypeRenderer"));
+
+    var type = types.FirstOrDefault(
+        t => (Activator.CreateInstance(t) as DefaultTypeRenderer)!.Extensions.Contains(Current.Extension.ToLower()[1..]),
+        typeof(DefaultTypeRenderer)
+    );
+    // var type = Type.GetType($"Conesoft.Website.Files.Components.Controls.TypeRenderers.{CleanUp(Current.Extension)}FileRenderer")
+    //     ?? typeof(Controls.TypeRenderers.DefaultTypeRenderer);
+
     var parameters = new Dictionary<string, object>
             {
                 ["Current"] = Current,

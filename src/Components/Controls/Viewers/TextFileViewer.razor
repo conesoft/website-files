@@ -1,12 +1,16 @@
-﻿@inject FileHostingPath path
+﻿@inject FileHostingPaths paths
 
 <BreadCrumbs Path="@Url" />
 
 <MetaData Path="@Url" />
 
-<pre>
-    @text
-</pre>
+<main>
+    <section>
+        <pre>
+            @text
+        </pre>
+    </section>
+</main>
 
 @code {
     [Parameter]
@@ -17,7 +21,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var file = (path.Directory / Url).AsFile;
+        var file = paths.Roots.Select(p => (p / Url).AsFile).First(f => f.Exists);
 
         title = file.Name;
 

@@ -1,7 +1,10 @@
 pre {
-    max-width: 60rem;
+    padding: 1rem;
     place-self: stretch center;
     user-select: text;
     overflow-x: auto;
-    background: #222;
+    background: #111;
+    margin: 1rem;
+    justify-self: stretch;
+    box-shadow: inset 0 0 1rem var(--accent-color-50);
 }

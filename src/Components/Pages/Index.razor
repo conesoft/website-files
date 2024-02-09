@@ -3,7 +3,7 @@
 @using Conesoft.Website.Files.Components.Controls
 @using Conesoft.Website.Files.Components.Controls.Viewers
 
-@inject FileHostingPath path
+@inject FileHostingPaths paths
 @inject NavigationManager navigation
 
 @code {
@@ -14,12 +14,12 @@
 
 @{
     var url = new Uri(navigation.Uri).PathAndQuery;
-    var file = (path.Directory / (Path ?? "")).AsFile;
+    var files = paths.Roots.Select(p => (p / (Path ?? "")).AsFile);
 }
 
 <MetaData Path="@Path" />
 
-@if (file.Exists == false)
+@if (files.Any(f => f.Exists) == false)
 {
     <BreadCrumbs Path="@Path" />
 
