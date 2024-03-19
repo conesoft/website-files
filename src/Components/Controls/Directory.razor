@@ -1,4 +1,6 @@
-﻿@code {
+﻿@inject IJSRuntime JsRuntime
+
+@code {
     [Parameter] public Conesoft.Files.Directory Current { get; set; } = Conesoft.Files.Directory.Invalid;
     [Parameter] public string Path { get; set; } = "";
 
@@ -7,9 +9,27 @@
 }
 
 <li>
-    <img src="/folder-icon.svg" />
-    <a href="@CurrentPath">@Current.Name</a>
-    <aside>
-        <a href="@CurrentPathForDownload" download="">▼</a>
-    </aside>
+    <section>
+        <img src="/folder-icon.svg" />
+        <a href="@CurrentPath">@Current.Name</a>
+    </section>
+    <menu>
+        <li>
+            download <a href="@CurrentPathForDownload" download="">▼</a>
+        </li>
+        <li dangerous>
+            delete <a @onclick="@DeleteFolder" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+        </li>
+    </menu>
 </li>
+
+@code {
+    public async Task DeleteFolder()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\n{Current.Path}");
+        if (confirmed)
+        {
+            Current.Delete();
+        }
+    }
+}

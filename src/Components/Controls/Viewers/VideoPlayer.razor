@@ -1,4 +1,5 @@
-﻿@using Blazored.Video.Support
+﻿@using System
+@using Blazored.Video.Support
 @using Blazored.Video
 
 @rendermode InteractiveServer
@@ -12,7 +13,7 @@
     <source src="/*/@Url" />
 </BlazoredVideo>
 
-<nav fullscreen-viewer>
+<nav fullscreen-viewer @onkeydown=HandleKeyboard>
     @if (mute == false)
     {
         <button id="mute" @onclick=Mute>
@@ -56,13 +57,12 @@
         </button>
     }
 
-    <Conesoft.Website.Files.Components.Controls.ProgressSlider
-        LeftText=@($"{currentTime:hh\\:mm\\:ss}")
-        MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
-        RightText=@($"{runTime:hh\\:mm\\:ss}")
-        Value="@(100 * currentTime / runTime)"
-        Scrubbing="Scrubbing"
-        style="grid-area: progress" />
+    <Conesoft.Website.Files.Components.Controls.ProgressSlider LeftText=@($"{currentTime:hh\\:mm\\:ss}")
+                                                               MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
+                                                               RightText=@($"{runTime:hh\\:mm\\:ss}")
+                                                               Value="@(100 * currentTime / runTime)"
+                                                               Scrubbing="Scrubbing"
+                                                               style="grid-area: progress" />
 </nav>
 
 @code {
@@ -104,13 +104,13 @@
 
     public async Task Scrubbing(double? value)
     {
-        if(value.HasValue)
+        if (value.HasValue)
         {
             scrubbingTime = runTime * value.Value / 100;
         }
         else
         {
-            if(scrubbingTime.HasValue)
+            if (scrubbingTime.HasValue)
             {
                 await video.SetCurrentTimeAsync(scrubbingTime!.Value.TotalSeconds);
             }
@@ -130,6 +130,18 @@
         playing = false;
     }
 
+    public async Task TogglePlayPause()
+    {
+        if(playing == false)
+        {
+            await Play();
+        }
+        else
+        {
+            await Pause();
+        }
+    }
+
     public async Task BackwardSkip()
     {
         await video.SetCurrentTimeAsync(-10 + await video.GetCurrentTimeAsync());
@@ -144,6 +156,18 @@
     {
         await js.InvokeVoidAsync("document.documentElement.requestFullscreen");
         fullscreen = true;
+    }
+
+    public async Task ToggleFullscreen()
+    {
+        if (fullscreen == false)
+        {
+            await EnterFullscreen();
+        }
+        else
+        {
+            await ExitFullscreen();
+        }
     }
 
     public async Task ExitFullscreen()
@@ -164,11 +188,31 @@
         mute = false;
     }
 
+
+
+    [JSInvokable]
+    public static async Task HandleKeyboard(KeyboardEventArgs args)
+    {
+        if (current != null)
+        {
+            switch (args.Key)
+            {
+                case " ":
+                    await current.TogglePlayPause();
+                    break;
+                case "f":
+                    await current.ToggleFullscreen();
+                    break;
+            }
+        }
+    }
+
+    static VideoPlayer current = null;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
-
             var title = System.IO.Path.GetFileNameWithoutExtension(string.Join(' ', Uri.UnescapeDataString(Url.Split("/").Reverse().FirstOrDefault() ?? "").Split(' ').Skip(1)));
             title = title.StartsWith("- ") ? title[2..] : title;
             var artist = Uri.UnescapeDataString(string.Join(": ", Url.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Skip(1).Reverse().Skip(2).Reverse())) + ": " + Uri.UnescapeDataString(Url.Split("/").Reverse().Skip(1).FirstOrDefault() ?? "");
@@ -176,6 +220,8 @@
 
             var module = await js.InvokeAsync<IJSObjectReference>("import", "/Components/Controls/Viewers/VideoPlayer.razor.js");
             await module.InvokeVoidAsync("updateMediaSession", title, artist, image);
+            await module.InvokeVoidAsync("registerGlobalKeyboardEvents", typeof(Program).Assembly.FullName!.Split(',').First(), "HandleKeyboard");
+            current = this;
         }
         await base.OnAfterRenderAsync(firstRender);
     }

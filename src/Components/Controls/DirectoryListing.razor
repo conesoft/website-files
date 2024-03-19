@@ -2,30 +2,33 @@
 @using Conesoft.Website.Files.Components.Controls.TypeRenderers
 @inject FileHostingPaths fileHostingPaths
 
+@rendermode InteractiveServer
+
 @code {
     [Parameter] public string Path { get; set; } = "";
     IEnumerable<Conesoft.Files.Directory> Roots => fileHostingPaths.Roots.Select(p => p / Path);
 }
 
-<AuthorizeView>
-    <Authorized>
-        @if (Roots.Where(r => r.Exists).SelectMany(d => d.Directories).Any())
-        {
-            <section>
-                <ul>
-                    @foreach (var directory in Roots.Where(r => r.Exists).SelectMany(d => d.Directories).OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer()).DistinctBy(d => d.Name))
-                    {
-                        <Directory Path="@Path" Current="@directory" />
-                    }
-                </ul>
-            </section>
-        }
-        @if (Roots.Where(r => r.Exists).SelectMany(d => d.Files).Any())
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            @if (Roots.Where(r => r.Exists).SelectMany(d => d.Directories).Any())
             {
-            @foreach (var group in GroupedFiles(Roots.Where(r => r.Exists).SelectMany(d => d.Files)))
+                <section>
+                    <ul>
+                        @foreach (var directory in Roots.Where(r => r.Exists).SelectMany(d => d.Directories).OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer()).DistinctBy(d => d.Name))
+                        {
+                            <Directory Path="@Path" Current="@directory" />
+                        }
+                    </ul>
+                </section>
+            }
+            @if (Roots.Where(r => r.Exists).SelectMany(d => d.Files).Any())
+            {
+                @foreach (var group in GroupedFiles(Roots.Where(r => r.Exists).SelectMany(d => d.Files)))
                 {
                     <section>
-                        <aside style="place-self: center start; line-height: 1rem; margin: 0.5rem 0.5rem -0.5rem; opacity: 0.7; font-size: 1.4rem;">@group.Key.Name.Replace("TypeRenderer", "").Replace("Default", "Files")</aside>
+                        <header>@group.Key.Name.Replace("TypeRenderer", "").Replace("Default", "Files")</header>
                         <ul>
                             @foreach (var file in group.OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer()))
                             {
@@ -34,9 +37,10 @@
                         </ul>
                     </section>
                 }
-        }
-    </Authorized>
-</AuthorizeView>
+            }
+        </Authorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
 
 @code {
     IEnumerable<IGrouping<Type, Conesoft.Files.File>> GroupedFiles(IEnumerable<Conesoft.Files.File> files)
@@ -52,6 +56,21 @@
             );
 
             return type;
+        });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var roots = fileHostingPaths.Roots.Select(p => p / Path);
+        roots.AsParallel().ForAll(async root =>
+        {
+            if(root.Exists)
+            {
+                await foreach (var files in root.Live().Changes())
+                {
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
         });
     }
 }

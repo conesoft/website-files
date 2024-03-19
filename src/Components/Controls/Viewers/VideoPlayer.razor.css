@@ -4,8 +4,6 @@ nav {
     place-content: center;
     height: auto;
     padding: 5rem;
-    opacity: 0.01; /* to kill the hw video hw acceleration darkness bug */
-    z-index: 1;
     transition: all 0.33s linear;
     grid-template:
         "mute     ........ backward play     forward  ........ maximize" auto
@@ -14,9 +12,14 @@ nav {
         / 1fr 2rem 1fr 1fr 1fr 2rem 1fr
 }
 
-    nav:not(:hover) * {
+    nav:not(:hover) > * {
         opacity: 0; /* to kill the hw video hw acceleration darkness bug */
     }
+
+::deep:not(:hover) .slider {
+    opacity: 0;
+    transition: all 0.33s linear;
+}
 
 #mute {
     grid-area: mute;
@@ -38,10 +41,18 @@ nav {
     grid-area: maximize;
 }
 
+::deep .slider {
+    background: rgb(127, 127, 127, 0.125);
+    backdrop-filter: saturate(150%) blur(2rem);
+    border-radius: var(--glow-radius);
+}
+
 #progress {
     grid-area: progress;
     place-self: stretch stretch;
     grid-template: "all";
+    background: rgb(127, 127, 127, 0.125);
+    backdrop-filter: saturate(150%) blur(2rem);
 }
 
     #progress > * {
@@ -108,10 +119,9 @@ nav button {
     width: 8rem;
     height: 8rem;
     border-radius: 4rem;
-    background: rgb(255, 255, 255, 0.25);
+    background: rgb(127, 127, 127, 0.125);
     backdrop-filter: saturate(150%) blur(2rem);
     color: var(--color);
-    opacity: 0.3;
     font-size: 3rem;
     transition: all 0s linear;
     transition: opacity 0.333s linear;
@@ -121,10 +131,10 @@ nav button {
         background: rgb(255, 255, 255, 0.25) !important;
         box-shadow: none !important;
         backdrop-filter: saturate(150%) blur(2rem);
-        opacity: 1;
     }
 
     nav button :is(svg, img) {
-        max-width: 2rem;
+        width: 2rem;
+        aspect-ratio: 1;
         place-self: center;
     }

@@ -1,13 +1,35 @@
-﻿@code {
+﻿@inject IJSRuntime JsRuntime
+
+@code {
     [Parameter] public Conesoft.Files.File Current { get; set; } = Conesoft.Files.Directory.Invalid.AsFile;
     [Parameter] public string Path { get; set; } = "";
 }
-<li>
-    @*<a href="@($"/*/{Path}/{Current.Name}")" target="_top">@Current.Name</a>*@
-    <img src="/file-icon.svg" />
-    <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.Name</a>
-    @Current.Info.Length.Bytes().Humanize()
-    <aside horizontal>
-        <a href="*/@($"{Path}/{Current.Name}")" download="">▼</a>
-    </aside>
-</li>
+@if (Current.Exists)
+{
+    <li>
+        <section>
+            <img src="/file-icon.svg" />
+            <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.Name</a>
+            <b>@Current.Info.Length.Bytes().Humanize()</b>
+        </section>
+        <menu>
+            <li>
+                download <a href="*/@($"{Path}/{Current.Name}")" download="">▼</a>
+            </li>
+            <li dangerous>
+                delete <a @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+            </li>
+        </menu>
+    </li>
+}
+
+@code {
+    public async Task DeleteFile()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\n{Current.Path}");
+        if (confirmed)
+        {
+            Current.Delete();
+        }
+    }
+}
