@@ -8,7 +8,7 @@
     private string CurrentPathForDownload => $"/*/{(CurrentPath.StartsWith("/") ? CurrentPath[1..] : CurrentPath)}";
 }
 
-<li>
+<li @key=Current.Path>
     <section>
         <img src="/folder-icon.svg" />
         <a href="@CurrentPath">@Current.Name</a>

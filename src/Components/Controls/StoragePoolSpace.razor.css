@@ -1,7 +1,7 @@
 section {
     display: grid;
     place-items: stretch;
-    height: calc(2rem + 2*1rem);
+    z-index: 0;
 }
 
     section * {

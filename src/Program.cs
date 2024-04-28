@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddHttpClient()
-    .AddSingleton(new FileHostingPaths(@"D:\Public", @"E:\Public"))
+    .AddSingleton(new FileHostingPaths(@"D:\Public", @"E:\Public", @"D:\Private"))
     .AddUsersWithStorage()
     .AddRazorComponents().AddInteractiveServerComponents();
 

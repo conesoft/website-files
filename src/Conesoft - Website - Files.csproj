@@ -9,6 +9,7 @@
 
 	<ItemGroup>
 	  <None Include="bundleconfig.json" />
+	  <None Include="Properties\PublishProfiles\Deploy.pubxml.user" />
 	</ItemGroup>
 
 	<ItemGroup>

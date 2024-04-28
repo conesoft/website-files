@@ -17,7 +17,10 @@ public static class FileHandlerRoute
             {
                 return Results.NotFound();
             }
-
+            if ((file == null || file.Exists == false) && (directory == null || directory.Exists == false))
+            {
+                return Results.NotFound();
+            }
             if ((file == null || file.Exists == false) && directory != null && directory.Exists == true)
             {
                 if (context.Features.Get<IHttpBodyControlFeature>() is var syncIOFeature and not null)
@@ -28,7 +31,7 @@ public static class FileHandlerRoute
                 var response = context.Response;
 
                 var name = directory.Path.Replace("\\", "/");
-                foreach(var p in paths.Roots.Select(d => d.Path.Replace("\\", "/") + "/"))
+                foreach (var p in paths.Roots.Select(d => d.Path.Replace("\\", "/") + "/"))
                 {
                     name = name.Replace(p, "");
                 }

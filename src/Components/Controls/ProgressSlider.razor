@@ -29,21 +29,22 @@
     }
 
     [Parameter]
-    public string LeftText { get; set; }
+    public string LeftText { get; set; } = "";
     [Parameter]
-    public string MiddleText { get; set; }
+    public string MiddleText { get; set; } = "";
     [Parameter]
-    public string RightText { get; set; }
+    public string RightText { get; set; } = "";
 
     [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> InputAttributes { get; set; }
+    public Dictionary<string, object> InputAttributes { get; set; } = new();
 
     [Parameter]
-    public Func<double?, Task> Scrubbing { get; set; }
+    public Func<double?, Task>? Scrubbing { get; set; }
 
-    public async Task MouseDown()
+    public Task MouseDown()
     {
         scrubbing = true;
+        return Task.CompletedTask;
     }
 
     public async Task MouseUp()

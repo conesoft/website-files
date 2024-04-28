@@ -3,7 +3,8 @@ nav {
     place-self: end center;
     place-content: center;
     height: auto;
-    padding: 5rem;
+    padding: 2rem;
+    scale: 0.7;
     transition: all 0.33s linear;
     grid-template:
         "mute     ........ backward play     forward  ........ maximize" auto
@@ -19,6 +20,10 @@ nav {
 ::deep:not(:hover) .slider {
     opacity: 0;
     transition: all 0.33s linear;
+}
+
+::deep video {
+    background: var(--background-color);
 }
 
 #mute {

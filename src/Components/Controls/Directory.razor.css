@@ -73,7 +73,6 @@ menu {
         gap: 1rem;
         width: 100%;
         position: relative;
-        background-color: var(--background-color-70);
     }
 
     menu:hover li {

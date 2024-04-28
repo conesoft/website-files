@@ -12,11 +12,17 @@
 <CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized>
-            @if (Roots.Where(r => r.Exists).SelectMany(d => d.Directories).Any())
+            @if (Roots.Where(r => r.Exists).SelectMany(d => d.Directories).Where(d => d.Info.Attributes.HasFlag(FileAttributes.Hidden) == false).Any())
             {
                 <section>
                     <ul>
-                        @foreach (var directory in Roots.Where(r => r.Exists).SelectMany(d => d.Directories).OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer()).DistinctBy(d => d.Name))
+                        @foreach (var directory in Roots
+                            .Where(r => r.Exists)
+                            .SelectMany(d => d.Directories)
+                            .Where(d => d.Info.Attributes.HasFlag(FileAttributes.Hidden) == false)
+                            .OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer())
+                            .DistinctBy(d => d.Name)
+                        )
                         {
                             <Directory Path="@Path" Current="@directory" />
                         }
@@ -25,7 +31,7 @@
             }
             @if (Roots.Where(r => r.Exists).SelectMany(d => d.Files).Any())
             {
-                @foreach (var group in GroupedFiles(Roots.Where(r => r.Exists).SelectMany(d => d.Files)))
+                @foreach (var group in GroupedFiles(Roots.Where(r => r.Exists).SelectMany(d => d.Files).Where(f => f.Info.Attributes.HasFlag(FileAttributes.Hidden) == false)))
                 {
                     <section>
                         <header>@group.Key.Name.Replace("TypeRenderer", "").Replace("Default", "Files")</header>
@@ -59,7 +65,7 @@
         });
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         var roots = fileHostingPaths.Roots.Select(p => p / Path);
         roots.AsParallel().ForAll(async root =>
@@ -72,5 +78,6 @@
                 }
             }
         });
+        return Task.CompletedTask;
     }
 }
