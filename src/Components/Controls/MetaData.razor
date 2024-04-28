@@ -6,7 +6,7 @@
 }
 
 @{
-    var segments = Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+    var segments = Path != null ? Path.Split('/', StringSplitOptions.RemoveEmptyEntries) : [];
 
     var allfolders = string.Join(" ▸ ", segments.Select(s => HtmlEncoder.Default.Encode(s).Trim()));
     allfolders = allfolders == "" ? "Home" : allfolders;

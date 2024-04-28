@@ -7,7 +7,7 @@
 }
 
 @{
-    var segments = Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+    var segments = Path != null ? Path.Split('/', StringSplitOptions.RemoveEmptyEntries) : [];
 
     var breadCrumbs = segments.Select((s, i) => new BreadCrumb
     (

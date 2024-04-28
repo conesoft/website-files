@@ -7,14 +7,21 @@
 @inject NavigationManager navigation
 
 @code {
-    [Parameter] public string? Path { get; set; }
+    [Parameter] public string? Path { get; set; } = "";
 
     protected override void OnParametersSet() => Path ??= "";
+
+    Conesoft.Files.Directory[] roots = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        roots = await paths.GetRoots();
+    }
 }
 
 @{
     var url = new Uri(navigation.Uri).PathAndQuery;
-    var files = paths.Roots.Select(p => (p / (Path ?? "")).AsFile);
+    var files = roots.Select(p => (p / (Path ?? "")).AsFile);
 }
 
 <MetaData Path="@Path" />

@@ -6,32 +6,31 @@
 
 @code {
     [Parameter] public string Path { get; set; } = "";
-    IEnumerable<Conesoft.Files.Directory> Roots => fileHostingPaths.Roots.Select(p => p / Path);
 }
 
 <CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized>
-            @if (Roots.Where(r => r.Exists).SelectMany(d => d.Directories).Where(d => d.Info.Attributes.HasFlag(FileAttributes.Hidden) == false).Any())
+            @if (roots.Where(r => r.Exists).SelectMany(d => d.Directories).Where(d => d.Info.Attributes.HasFlag(FileAttributes.Hidden) == false).Any())
             {
                 <section>
                     <ul>
-                        @foreach (var directory in Roots
-                            .Where(r => r.Exists)
-                            .SelectMany(d => d.Directories)
-                            .Where(d => d.Info.Attributes.HasFlag(FileAttributes.Hidden) == false)
-                            .OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer())
-                            .DistinctBy(d => d.Name)
-                        )
+                        @foreach (var directory in roots
+                                                   .Where(r => r.Exists)
+                                                   .SelectMany(d => d.Directories)
+                                                   .Where(d => d.Info.Attributes.HasFlag(FileAttributes.Hidden) == false)
+                                                   .OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer())
+                                                   .DistinctBy(d => d.Name)
+                       )
                         {
                             <Directory Path="@Path" Current="@directory" />
                         }
                     </ul>
                 </section>
             }
-            @if (Roots.Where(r => r.Exists).SelectMany(d => d.Files).Any())
+            @if (roots.Where(r => r.Exists).SelectMany(d => d.Files).Any())
             {
-                @foreach (var group in GroupedFiles(Roots.Where(r => r.Exists).SelectMany(d => d.Files).Where(f => f.Info.Attributes.HasFlag(FileAttributes.Hidden) == false)))
+                @foreach (var group in GroupedFiles(roots.Where(r => r.Exists).SelectMany(d => d.Files).Where(f => f.Info.Attributes.HasFlag(FileAttributes.Hidden) == false)))
                 {
                     <section>
                         <header>@group.Key.Name.Replace("TypeRenderer", "").Replace("Default", "Files")</header>
@@ -49,6 +48,8 @@
 </CascadingAuthenticationState>
 
 @code {
+    Conesoft.Files.Directory[] roots = [];
+
     IEnumerable<IGrouping<Type, Conesoft.Files.File>> GroupedFiles(IEnumerable<Conesoft.Files.File> files)
     {
         var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name.EndsWith("TypeRenderer"));
@@ -65,12 +66,12 @@
         });
     }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        var roots = fileHostingPaths.Roots.Select(p => p / Path);
+        roots = (await fileHostingPaths.GetRoots()).Select(p => p / Path).ToArray();
         roots.AsParallel().ForAll(async root =>
         {
-            if(root.Exists)
+            if (root.Exists)
             {
                 await foreach (var files in root.Live().Changes())
                 {
@@ -78,6 +79,5 @@
                 }
             }
         });
-        return Task.CompletedTask;
     }
 }

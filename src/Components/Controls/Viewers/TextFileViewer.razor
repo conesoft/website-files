@@ -21,7 +21,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var file = paths.Roots.Select(p => (p / Url).AsFile).First(f => f.Exists);
+        var file = (await paths.GetRoots()).Select(p => (p / Url).AsFile).First(f => f.Exists);
 
         title = file.Name;
 

@@ -9,10 +9,11 @@ public static class FileHandlerRoute
     public static void MapFileHandlerRoute(this WebApplication app)
     {
         //        app.MapGet("/*/{*route:regex(.*[^/]$)}", (FileHostingPath path, string route) =>
-        app.MapGet("/*/{*route}", (FileHostingPaths paths, string route, HttpContext context) =>
+        app.MapGet("/*/{*route}", async (FileHostingPaths paths, string route, HttpContext context) =>
         {
-            var file = paths.Roots.Select(p => (p / route).AsFile).FirstOrDefault(f => f.Exists);
-            var directory = paths.Roots.Select(p => p / route).FirstOrDefault(p => p.Exists);
+            var roots = await paths.GetRoots();
+            var file = roots.Select(p => (p / route).AsFile).FirstOrDefault(f => f.Exists);
+            var directory = roots.Select(p => p / route).FirstOrDefault(p => p.Exists);
             if (file != null && file.Exists == false && (directory == null || directory.Exists == false))
             {
                 return Results.NotFound();
@@ -31,13 +32,13 @@ public static class FileHandlerRoute
                 var response = context.Response;
 
                 var name = directory.Path.Replace("\\", "/");
-                foreach (var p in paths.Roots.Select(d => d.Path.Replace("\\", "/") + "/"))
+                foreach (var p in roots.Select(d => d.Path.Replace("\\", "/") + "/"))
                 {
                     name = name.Replace(p, "");
                 }
                 name = name.Replace("/", " - ").Trim(' ', '-');
 
-                var directories = paths.Roots.Select(p => p / route).Where(p => p.Exists).Select(p => p.Path);
+                var directories = roots.Select(p => p / route).Where(p => p.Exists).Select(p => p.Path);
 
                 response.Headers.ContentLength = Zip.CalculateSize(directories);
                 response.Headers.ContentDisposition = $"attachment; filename=\"{name}.zip\"";
