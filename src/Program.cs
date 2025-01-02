@@ -5,7 +5,7 @@ using Conesoft.Website.Files.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder
-    .AddHostConfigurationFiles(legacyMode: true)
+    .AddHostConfigurationFiles()
     .AddHostEnvironmentInfo()
     .AddLoggingService()
     .AddUsersWithStorage()
