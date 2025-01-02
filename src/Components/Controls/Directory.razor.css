@@ -7,7 +7,7 @@
 ul > li {
     grid-template-columns: 1fr auto;
     gap: 1rem;
-    padding-inline: 1rem;
+    padding-inline: 1rem 0;
     place-items: center stretch;
     position: relative;
     --rowheight: 2rem;
@@ -17,6 +17,7 @@ ul > li {
     ul > li section {
         gap: 1rem;
         grid-template-columns: auto 1fr;
+        overflow: hidden;
     }
 
         ul > li section * {
@@ -27,83 +28,20 @@ ul > li {
         filter: drop-shadow(0 0rem 1rem rgba(0, 0, 0, 0.5));
     }
 
-menu {
-    opacity: 0.7;
-    transition: all linear 0.333s;
-    position: absolute;
-    top: 0;
-    padding-block-start: var(--rowheight);
-    right: 0;
-}
-
-    menu:hover {
-        opacity: 1;
-        filter: drop-shadow(0 0rem 1rem rgba(0, 0, 0, 0.5));
+    menu {
+        display: flex;
     }
-
-    menu a {
-        color: var(--accent-color);
-        font-size: calc(var(--rowheight) / 2);
-        text-decoration: none;
-        font-weight: 900;
-        width: var(--rowheight);
-        height: var(--rowheight);
-        line-height: var(--rowheight);
-        font-size: calc(var(--rowheight) / 2);
-        text-align: center;
-    }
-
-        menu a:after {
-            content: "";
-            position: absolute;
-            inset: 0;
-        }
-
-        menu a:hover {
-            color: white;
-        }
 
     menu li {
-        opacity: 0;
-        display: grid;
-        grid-auto-flow: column;
-        place-items: center end;
-        padding-inline-start: 1rem;
-        font-weight: 100;
-        gap: 1rem;
-        width: 100%;
-        position: relative;
-    }
-
-    menu:hover li {
-        opacity: 1;
-        z-index: 1;
+        display: inline;
+        height: 2rem;
+        aspect-ratio: 1;
+        text-align: center;
+        cursor: pointer;
     }
 
     menu li:hover {
-        background: var(--accent-color);
-        filter: drop-shadow(0 0 1rem color-mix(in oklab, var(--accent-color) 50%, transparent));
-        z-index: 1;
-    }
-
-    menu::after {
-        transition: all 0.25s linear;
-        content: "☰";
-        position: absolute;
-        display: grid;
-        right: 0;
-        top: 0;
-        width: var(--rowheight);
-        height: var(--rowheight);
-        line-height: var(--rowheight);
-        font-size: calc(var(--rowheight) / 2);
-        text-align: center;
-    }
-
-    menu:hover::after {
-        color: var(--color);
         background-color: var(--accent-color);
-        filter: drop-shadow(0 0 2rem var(--accent-color));
     }
 
 [dangerous] {

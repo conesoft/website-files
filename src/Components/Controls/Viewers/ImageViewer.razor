@@ -1,0 +1,93 @@
+﻿@using Conesoft.Files
+@using System.Reflection
+@using Conesoft.Website.Files.Components.Controls.TypeRenderers
+
+@inject FileHostingPaths paths
+@inject NavigationManager nav
+
+<AuthorizeView>
+    <Authorized>
+        <title style="display: none">@Url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
+        <img fullscreen-viewer src="/*/@Url" />
+
+        <label id="togglenav" fullscreen-viewer>
+
+            <nav fullscreen-viewer>
+                <button disabled=@string.IsNullOrWhiteSpace(previousLink) @onclick=GoToPrevious id="backward">
+                    <img src="https://cdn.conesoft.net/icons/skip-backward.svg" />
+                </button>
+                <button disabled=@string.IsNullOrWhiteSpace(nextLink) @onclick=GoToNext id="forward">
+                    <img src="https://cdn.conesoft.net/icons/skip-forward.svg" />
+                </button>
+            </nav>
+        </label>
+
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    [Parameter]
+    public string Url { get; set; } = "";
+
+    string? previousLink = null;
+    string? nextLink = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var roots = await paths.GetRoots();
+
+        var fileroot = string.Join("/", Url.Split("/").SkipLast(1));
+
+        var directories = roots.Select(p => (p / (fileroot ?? "")).AsDirectory).NotNull();
+
+        var groups = GroupedFiles(directories.SelectMany(d => d.Files));
+
+        var images = groups.First(g => g.Key == typeof(ImageTypeRenderer)).Files();
+
+        var current = roots.Select(p => (p / (Url.Replace("/", "\\") ?? "")).AsFile).NotNull().First();
+        var previous = images.Reverse().SkipWhile(i => i.Path != current.Path).Skip(1).FirstOrDefault();
+        var next = images.SkipWhile(i => i.Path != current.Path).Skip(1).FirstOrDefault();
+
+        var segments = Url.Split("/").Count();
+
+        previousLink = previous != null ? string.Join("/", previous.Path.Split("\\").Reverse().Take(segments).Reverse()) : null;
+        nextLink = next != null ? string.Join("/", next.Path.Split("\\").Reverse().Take(segments).Reverse()) : "";
+    }
+
+    public void GoToPrevious()
+    {
+        nav.NavigateTo(previousLink!, forceLoad: true);
+    }
+
+    public void GoToNext()
+    {
+        nav.NavigateTo(nextLink!, forceLoad: true);
+    }
+
+    static Dictionary<string, Type> extensionRendererTypes = new();
+    static Dictionary<Type, IComparer<string>> comparers = new();
+
+    IEnumerable<IGrouping<Type, Conesoft.Files.File>> GroupedFiles(IEnumerable<Conesoft.Files.File> files)
+    {
+        if (extensionRendererTypes.Count == 0)
+        {
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name.EndsWith("TypeRenderer")).ToArray();
+            var renderers = types.Select(t => (Activator.CreateInstance(t) as DefaultTypeRenderer)).NotNull().ToArray();
+
+            foreach (var renderer in renderers)
+            {
+                foreach (var extension in renderer.Extensions)
+                {
+                    if (extensionRendererTypes.ContainsKey(extension) == false)
+                    {
+                        extensionRendererTypes[extension] = renderer.GetType();
+                    }
+                }
+
+                comparers[renderer.GetType()] = renderer.Comparer;
+            }
+        }
+        return files.GroupBy(f => extensionRendererTypes.GetValueOrDefault(f.Extension.ToLower()[1..], typeof(DefaultTypeRenderer)));
+    }
+}

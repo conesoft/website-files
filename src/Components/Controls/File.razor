@@ -1,7 +1,7 @@
 ﻿@using System.Reflection
 @using Conesoft.Website.Files.Components.Controls.TypeRenderers
 @code {
-    [Parameter] public Conesoft.Files.File Current { get; set; } = Conesoft.Files.Directory.Invalid.AsFile;
+    [Parameter] public Conesoft.Files.File Current { get; set; } = default!;
     [Parameter] public string Path { get; set; } = "";
 
     string CleanUp(string extension)

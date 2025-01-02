@@ -4,131 +4,19 @@
     opacity: 0.7;
 }
 
-li {
-    padding-inline: 1rem;
-    gap: 1rem;
-    place-items: stretch;
-}
-
-    li section {
-        gap: 1rem;
-        grid-template-columns: auto 1fr auto;
-    }
-
-        li section * {
-            place-self: center start;
-        }
-
-            li section *:last-child {
-                place-self: center end;
-            }
-img {
-    width: 1rem;
-    place-self: center;
-    opacity: 0.7;
-}
-
 ul > li {
     grid-template-columns: 1fr auto;
     gap: 1rem;
-    padding-inline: 1rem;
-    place-items: center stretch;
-    position: relative;
-    --rowheight: 2rem;
-    height: var(--rowheight);
+    place-content: stretch;
 }
 
     ul > li section {
+        grid-template-columns: auto 1fr auto;
         gap: 1rem;
+        position: relative;
+        padding-inline: 1rem 0;
     }
-
-        ul > li section * {
-            place-self: center start;
-        }
 
     ul > li:has(menu:hover) {
         filter: drop-shadow(0 0rem 1rem rgba(0, 0, 0, 0.5));
     }
-
-menu {
-    opacity: 0.7;
-    transition: all linear 0.333s;
-    position: absolute;
-    top: 0;
-    padding-block-start: var(--rowheight);
-    right: 0;
-}
-
-    menu:hover {
-        opacity: 1;
-        filter: drop-shadow(0 0rem 1rem rgba(0, 0, 0, 0.5));
-    }
-
-    menu a {
-        color: var(--accent-color);
-        font-size: calc(var(--rowheight) / 2);
-        text-decoration: none;
-        font-weight: 900;
-        width: var(--rowheight);
-        height: var(--rowheight);
-        line-height: var(--rowheight);
-        font-size: calc(var(--rowheight) / 2);
-        text-align: center;
-    }
-
-        menu a:after {
-            content: "";
-            position: absolute;
-            inset: 0;
-        }
-
-        menu a:hover {
-            color: white;
-        }
-
-    menu li {
-        opacity: 0;
-        display: grid;
-        grid-auto-flow: column;
-        place-items: center end;
-        padding-inline-start: 1rem;
-        font-weight: 100;
-        gap: 1rem;
-        width: 100%;
-        position: relative;
-    }
-
-    menu:hover li {
-        opacity: 1;
-        z-index: 1;
-    }
-
-    menu li:hover {
-        background: var(--accent-color);
-        filter: drop-shadow(0 0 1rem color-mix(in oklab, var(--accent-color) 50%, transparent));
-        z-index: 1;
-    }
-
-    menu::after {
-        transition: all 0.25s linear;
-        content: "☰";
-        position: absolute;
-        display: grid;
-        right: 0;
-        top: 0;
-        width: var(--rowheight);
-        height: var(--rowheight);
-        line-height: var(--rowheight);
-        font-size: calc(var(--rowheight) / 2);
-        text-align: center;
-    }
-
-    menu:hover::after {
-        color: var(--color);
-        background-color: var(--accent-color);
-        filter: drop-shadow(0 0 2rem var(--accent-color));
-    }
-
-[dangerous] {
-    --accent-color: var(--danger-color);
-}

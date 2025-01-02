@@ -5,8 +5,8 @@
         @bind-value=value
         @bind-value:event="oninput"
         @bind-value:after="Refresh"
-        @onmousedown="MouseDown"
-    @onmouseup="MouseUp">
+        @onpointerdown="PointerDown"
+        @onpointerup="PointerUp">
     <p class="lefttext">@LeftText</p>
     <p class="middletext">@MiddleText</p>
     <p class="righttext">@RightText</p>
@@ -17,6 +17,7 @@
     private bool scrubbing;
 
     [Parameter]
+#pragma warning disable BL0007
     public double Value {
         get => value;
         set
@@ -27,6 +28,7 @@
             }
         }
     }
+#pragma warning restore BL0007
 
     [Parameter]
     public string LeftText { get; set; } = "";
@@ -41,13 +43,13 @@
     [Parameter]
     public Func<double?, Task>? Scrubbing { get; set; }
 
-    public Task MouseDown()
+    public Task PointerDown()
     {
         scrubbing = true;
         return Task.CompletedTask;
     }
 
-    public async Task MouseUp()
+    public async Task PointerUp()
     {
         if(Scrubbing != null)
         {

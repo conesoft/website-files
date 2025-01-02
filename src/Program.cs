@@ -4,23 +4,39 @@ using Conesoft.Website.Files.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder
+    .AddHostConfigurationFiles(legacyMode: true)
+    .AddHostEnvironmentInfo()
+    .AddLoggingService()
+    .AddUsersWithStorage()
+    ;
+
 builder.Services
+    .AddCompiledHashCacheBuster()
     .AddHttpClient()
     .AddHttpContextAccessor()
     .AddSingleton(new PublicFileHostingPaths(@"D:\Public", @"E:\Public"))
     .AddScoped<FileHostingPaths>()
-    .AddUsersWithStorage()
-    .AddRazorComponents().AddInteractiveServerComponents();
+    .AddRazorComponents().AddInteractiveServerComponents().AddCircuitOptions(options =>
+    {
+        options.DetailedErrors = true;
+        options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromSeconds(0);
+        options.DisconnectedCircuitMaxRetained = 0;
+    });
 
 var app = builder.Build();
 
 app
-    .UseStaticFiles()
+    .UseCompiledHashCacheBuster()
     .UseRouting() // fixes routes for Scoped CSS as well as static files
     .UseAntiforgery();
 
 app.MapUsersWithStorage();
+
+app.MapStaticAssets();
 app.MapFileHandlerRoute();
-app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+app.MapRazorComponents<App>()
+   .AddInteractiveServerRenderMode()
+;
 
 app.Run();

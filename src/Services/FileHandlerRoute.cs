@@ -1,4 +1,5 @@
-﻿using Conesoft.ZipFolder;
+﻿using Conesoft.Tools;
+using Conesoft.ZipFolder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.StaticFiles;
 
@@ -12,8 +13,8 @@ public static class FileHandlerRoute
         app.MapGet("/*/{*route}", async (FileHostingPaths paths, string route, HttpContext context) =>
         {
             var roots = await paths.GetRoots();
-            var file = roots.Select(p => (p / route).AsFile).FirstOrDefault(f => f.Exists);
-            var directory = roots.Select(p => p / route).FirstOrDefault(p => p.Exists);
+            var file = roots.Select(p => (p / route).AsFile).NotNull().FirstOrDefault(f => f.Exists);
+            var directory = roots.Select(p => p / route).NotNull().FirstOrDefault(p => p.Exists);
             if (file != null && file.Exists == false && (directory == null || directory.Exists == false))
             {
                 return Results.NotFound();

@@ -1,0 +1,82 @@
+﻿@using System.Globalization
+@inject IJSRuntime JsRuntime
+
+@code {
+    [Parameter] public Conesoft.Files.File Current { get; set; } = default!;
+    [Parameter] public string Path { get; set; } = "";
+}
+@if (Current.Exists)
+{
+    var namepart = string.Join(" ", Current.NameWithoutExtension.Split(" ")[..^1]);
+    var datepart = Current.NameWithoutExtension.Split(" ").Last();
+    datepart = $"{datepart[0..4]}-{datepart[4..6]}-{datepart[6..8]}";
+    DateTime.TryParse(datepart, out var date);
+
+    <li @key=Current.Path>
+        <section>
+            <img src="/file-icon.svg" />
+            <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.NameWithoutExtension</a>
+            <date>@date.ToString("D", new CultureInfo("en-US"))</date>
+            <aside>@date.Humanize()</aside>
+            <ul class="levels">
+                @foreach(var level in levels)
+                {
+                    <li class="@level.ToLowerInvariant()">@level</li>
+                }
+            </ul>
+            <b>@Current.Info.Length.Bytes().Humanize()</b>
+        </section>
+        <menu>
+            <li>
+                <a href="*/@($"{Path}/{Current.Name}")" download="" title="download">▼</a>
+            </li>
+            <li dangerous>
+                <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+            </li>
+        </menu>
+    </li>
+}
+
+@code {
+
+    List<string> levels = [];
+
+    string[] alllevels = ["Fatal", "Error", "Verbose", "Debug", "Warning"];
+
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        using var fileStream = new FileStream(Current.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var streamReader = new StreamReader(fileStream);
+
+        var text = await streamReader.ReadToEndAsync();
+
+        if (text != null)
+        {
+            levels.Clear();
+            levels.Add("Information");
+            foreach (var level in alllevels)
+            {
+                if (text.Contains($"\"@l\":\"{level}\""))
+                {
+                    levels.Add(level);
+                    break;
+                }
+            }
+        } else
+        {
+            levels.Add("ERROR");
+        }
+        StateHasChanged();
+    }
+
+    public async Task DeleteFile()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\n{Current.Path}");
+        if (confirmed)
+        {
+            Current.Delete();
+        }
+    }
+}

@@ -6,64 +6,72 @@
 
 @inject IJSRuntime js
 
-<title style="display: none">@Url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
-@* <video fullscreen-viewer src="/*/@Url" controls autoplay></video> *@
+<AuthorizeView>
+    <Authorized>
+        <title style="display: none">@Url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
+        @* <video fullscreen-viewer src="/*/@Url" controls autoplay></video> *@
 
-<BlazoredVideo @ref=video style="pointer-events: none; background-color: var(--background-color)" fullscreen-viewer autoplay VideoEventOptions="options" DurationChange="OnDurationChange" TimeUpdate="OnTimeUpdate">
-    <source src="/*/@Url" />
-</BlazoredVideo>
+        <BlazoredVideo @ref=video style="pointer-events: none; background-color: var(--background-color)" fullscreen-viewer autoplay VideoEventOptions="options" DurationChange="OnDurationChange" TimeUpdate="OnTimeUpdate">
+            <source src="/*/@Url" />
+        </BlazoredVideo>
 
-<nav fullscreen-viewer @onkeydown=HandleKeyboard>
-    @if (mute == false)
-    {
-        <button id="mute" @onclick=Mute>
-            <img src="https://cdn.conesoft.net/icons/mute.svg" />
-        </button>
-    }
-    else
-    {
-        <button id="mute" @onclick=Unmute>
-            <img src="https://cdn.conesoft.net/icons/unmute.svg" />
-        </button>
-    }
-    <button id="backward" @onclick=BackwardSkip>
-        <img src="https://cdn.conesoft.net/icons/skip-backward.svg" />
-    </button>
-    @if (playing == false)
-    {
-        <button id="play" @onclick=Play>
-            <img src="https://cdn.conesoft.net/icons/play.svg" />
-        </button>
-    }
-    else
-    {
-        <button id="play" @onclick=Pause>
-            <img src="https://cdn.conesoft.net/icons/pause.svg" />
-        </button>
-    }
-    <button id="forward" @onclick=ForwardSkip>
-        <img src="https://cdn.conesoft.net/icons/skip-forward.svg" />
-    </button>
-    @if (fullscreen == false)
-    {
-        <button id="maximize" @onclick=EnterFullscreen>
-            <img src="https://cdn.conesoft.net/icons/enter-fullscreen.svg" />
-        </button>
-    }
-    else
-    {
-        <button id="maximize" @onclick=ExitFullscreen>
-            <img src="https://cdn.conesoft.net/icons/exit-fullscreen.svg" />
-        </button>
-    }
+        <label id="togglenav" fullscreen-viewer>
 
-    <Conesoft.Website.Files.Components.Controls.ProgressSlider LeftText=@($"{currentTime:hh\\:mm\\:ss}")
-                                                               MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
-                                                               RightText=@($"{runTime:hh\\:mm\\:ss}")
-                                                               Value="@(100 * currentTime / runTime)"
-                                                               Scrubbing="Scrubbing"
-                                                               style="grid-area: progress" />
-</nav>
+            <nav fullscreen-viewer @onkeydown=HandleKeyboard>
+                @if (mute == false)
+                {
+                    <button id="mute" @onclick=Mute>
+                        <img src="https://cdn.conesoft.net/icons/mute.svg" />
+                    </button>
+                }
+                else
+                {
+                    <button id="mute" @onclick=Unmute>
+                        <img src="https://cdn.conesoft.net/icons/unmute.svg" />
+                    </button>
+                }
+                <button id="backward" @onclick=BackwardSkip>
+                    <img src="https://cdn.conesoft.net/icons/skip-backward.svg" />
+                </button>
+                @if (playing == false)
+                {
+                    <button id="play" @onclick=Play>
+                        <img src="https://cdn.conesoft.net/icons/play.svg" />
+                    </button>
+                }
+                else
+                {
+                    <button id="play" @onclick=Pause>
+                        <img src="https://cdn.conesoft.net/icons/pause.svg" />
+                    </button>
+                }
+                <button id="forward" @onclick=ForwardSkip>
+                    <img src="https://cdn.conesoft.net/icons/skip-forward.svg" />
+                </button>
+                @if (fullscreen == false)
+                {
+                    <button id="maximize" @onclick=EnterFullscreen>
+                        <img src="https://cdn.conesoft.net/icons/enter-fullscreen.svg" />
+                    </button>
+                }
+                else
+                {
+                    <button id="maximize" @onclick=ExitFullscreen>
+                        <img src="https://cdn.conesoft.net/icons/exit-fullscreen.svg" />
+                    </button>
+                }
+
+                <Conesoft.Website.Files.Components.Controls.ProgressSlider LeftText=@($"{currentTime:hh\\:mm\\:ss}")
+                                                                           MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
+                                                                           RightText=@($"{runTime:hh\\:mm\\:ss}")
+                                                                           Value="@(100 * currentTime / runTime)"
+                                                                           Scrubbing="Scrubbing"
+                                                                           style="grid-area: progress; font-size: 0.8rem" />
+            </nav>
+        </label>
+    </Authorized>
+</AuthorizeView>
+
 
 @code {
     [Parameter]

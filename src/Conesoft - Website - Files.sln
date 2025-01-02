@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conesoft - Website - Files"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor Components", "..\..\blazor-components\src\Blazor Components.csproj", "{528ECE1C-62D1-41DD-BB5C-F5686F56765D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conesoft.Tools", "..\..\nuget-tools\src\Conesoft.Tools.csproj", "{75A48543-F4DA-4A81-9326-CBDB0867DF17}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{528ECE1C-62D1-41DD-BB5C-F5686F56765D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{528ECE1C-62D1-41DD-BB5C-F5686F56765D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{528ECE1C-62D1-41DD-BB5C-F5686F56765D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{75A48543-F4DA-4A81-9326-CBDB0867DF17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{75A48543-F4DA-4A81-9326-CBDB0867DF17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75A48543-F4DA-4A81-9326-CBDB0867DF17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75A48543-F4DA-4A81-9326-CBDB0867DF17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

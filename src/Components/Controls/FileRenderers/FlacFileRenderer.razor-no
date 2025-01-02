@@ -1,7 +1,7 @@
 ﻿@using FlacLibSharp;
 
 @code {
-    [Parameter] public Conesoft.Files.File Current { get; set; } = Conesoft.Files.Directory.Invalid.AsFile;
+    [Parameter] public Conesoft.Files.File Current { get; set; } = default!;
     [Parameter] public string Path { get; set; } = "";
 }
 

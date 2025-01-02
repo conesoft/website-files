@@ -8,17 +8,17 @@
     private string CurrentPathForDownload => $"/*/{(CurrentPath.StartsWith("/") ? CurrentPath[1..] : CurrentPath)}";
 }
 
-<li @key=Current.Path>
+<li style=@($"view-transition-name: path-{CurrentPath.Replace("/","").Replace(" ","_")}") @key=Current.Path>
     <section>
         <img src="/folder-icon.svg" />
         <a href="@CurrentPath">@Current.Name</a>
     </section>
     <menu>
         <li>
-            download <a href="@CurrentPathForDownload" download="">▼</a>
+            <a href="@CurrentPathForDownload" download="" title="download">▼</a>
         </li>
         <li dangerous>
-            delete <a @onclick="@DeleteFolder" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+            <a title="delete" @onclick="@DeleteFolder" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
         </li>
     </menu>
 </li>

@@ -6,6 +6,8 @@
 @inject FileHostingPaths paths
 @inject NavigationManager navigation
 
+@rendermode InteractiveServer
+
 @code {
     [Parameter] public string? Path { get; set; } = "";
 
@@ -24,33 +26,36 @@
     var files = roots.Select(p => (p / (Path ?? "")).AsFile);
 }
 
-<MetaData Path="@Path" />
-
-@if (files.Any(f => f.Exists) == false)
+@if (files.Any(f => f?.Exists ?? false) == false)
 {
-    <BreadCrumbs Path="@Path" />
-
-    <main>
-        <DirectoryListing Path="@Path" />
-
-        <StoragePoolSpace />
-    </main>
+    <DirectoryListing Path="@Path" />
 }
 else
 {
-    @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
-    {
-        <VideoPlayer Url="@Path" />
-    }
-    else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
-    {
-        <TextFileViewer Url="@Path" />
-    }
-    else
-    {
-        if (string.IsNullOrWhiteSpace(Path) == false)
+    <CascadingAuthenticationState>
+
+        @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
         {
-            <p>go to: <a href="/*/@Path">@Path</a></p>
+            <VideoPlayer Url="@Path" />
         }
-    }
+        else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
+        {
+            <TextFileViewer Url="@Path" />
+        }
+        else if(Path != null && (Path.EndsWith(".jpg") || Path.EndsWith(".jpeg") || Path.EndsWith(".png")))
+        {
+            <ImageViewer Url="@Path" />
+        }
+        else if(Path != null && (Path.EndsWith(".log")))
+        {
+            <LogFileViewer Url="@Path" />
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(Path) == false)
+            {
+                <p>go to: <a href="/*/@Path">@Path</a></p>
+            }
+        }
+    </CascadingAuthenticationState>
 }

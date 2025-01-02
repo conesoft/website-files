@@ -1,25 +1,34 @@
 ﻿@inject IJSRuntime JsRuntime
 
+
 @code {
-    [Parameter] public Conesoft.Files.File Current { get; set; } = Conesoft.Files.Directory.Invalid.AsFile;
+    [Parameter] public Conesoft.Files.File Current { get; set; } = default!;
     [Parameter] public string Path { get; set; } = "";
 }
 @if (Current.Exists)
 {
-    <li>
+    <li @key=Current.Path>
         <section>
             <img src="/file-icon.svg" />
             <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.Name</a>
             <b>@Current.Info.Length.Bytes().Humanize()</b>
         </section>
-        <menu>
+        <Conesoft.Website.Files.Components.Controls.UX.DropDownMenu>
             <li>
-                download <a href="*/@($"{Path}/{Current.Name}")" download="">▼</a>
+                <a href="*/@($"{Path}/{Current.Name}")" download="" title="download">download ▼</a>
             </li>
             <li dangerous>
-                delete <a @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+                <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>delete ✕</a>
             </li>
-        </menu>
+        </Conesoft.Website.Files.Components.Controls.UX.DropDownMenu>
+@*         <menu>
+            <li>
+                <a href="*/@($"{Path}/{Current.Name}")" download="" title="download">▼</a>
+            </li>
+            <li dangerous>
+                <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+            </li>
+        </menu> *@
     </li>
 }
 

@@ -1,0 +1,203 @@
+dialog {
+    max-width: min(50rem, 100%);
+    place-self: center;
+    box-shadow: 0 1rem 5rem black;
+    font-weight: 100;
+    display: grid;
+    background: black;
+}
+
+    dialog:not([open]) {
+        display: none;
+    }
+
+    dialog * {
+        transition: all 0.33s linear !important;
+    }
+    dialog *:hover {
+        transition-duration: 0s !important;
+    }
+
+        dialog > * {
+            padding: 1rem 2rem;
+        }
+
+        dialog header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+        }
+
+            dialog header label {
+                text-align: start;
+                color: var(--log-color);
+                font-size: 2rem;
+                font-weight: 900;
+                text-transform: uppercase;
+            }
+
+            dialog header time {
+                font-size: 1.5rem;
+            }
+
+        dialog p {
+            background: #121212;
+        }
+
+        dialog table {
+            max-width: fit-content;
+        }
+
+    dialog td {
+        padding: 0.25rem 1rem;
+    }
+
+    dialog th {
+        font-weight: 100;
+        text-align: right;
+        overflow-wrap: normal;
+    }
+
+    dialog * {
+        overflow-wrap: anywhere;
+    }
+
+.info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    opacity: 0.7;
+    font-weight: 100;
+    color: grey;
+}
+
+    .info * {
+        padding: 0.5rem 1rem;
+        grid-column: auto;
+    }
+
+.filter form {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    grid-template-columns: none;
+    place-items: stretch;
+    height: 2rem;
+}
+
+.filter label {
+    display: inline;
+    grid-row: auto;
+    grid-column: auto;
+    text-align: center;
+    margin-block: -0.5rem;
+    padding-block: 0.5rem;
+    padding-inline: 0.5rem;
+    font-weight: 400;
+    color: black;
+}
+
+    .filter label:has(:checked):not(:has(:disabled)) {
+        background-color: var(--accent-color);
+        font-weight: 500;
+    }
+
+    .filter label:not(:has(:checked)) {
+        background-color: var(--accent-color-50);
+    }
+
+    .filter label:has(:disabled) {
+        background-color: #000;
+        color: #333;
+    }
+
+.filter input {
+    display: none;
+}
+
+.entries li {
+    display: grid;
+    user-select: text;
+    grid-template-columns: 1rem 7rem 1fr auto;
+    place-content: stretch;
+    place-items: stretch center;
+    overflow: hidden;
+    font-weight: 100;
+    height: 2rem;
+}
+
+    /*.entries li:hover {
+    scale: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}*/
+
+    .entries li > p {
+        place-self: stretch;
+        overflow: hidden;
+        display: inline;
+        white-space: nowrap;
+    }
+
+    .entries li > label {
+        rotate: 180deg;
+        font-weight: 900;
+        color: var(--log-color);
+        writing-mode: vertical-lr;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .entries li > var {
+        padding-inline: 1ch;
+        background: var(--log-color);
+        color: var(--background-color);
+        place-content: center;
+        margin-inline-start: 1ch;
+    }
+
+var {
+    all: revert;
+    font-weight: inherit;
+    font-family: inherit;
+    font-style: inherit;
+    color: var(--log-color);
+    font-weight: 400;
+}
+
+time {
+    display: grid;
+    place-items: center;
+    color: gray;
+    font-size: 0.7rem;
+}
+
+    time::before {
+        content: attr(title);
+        font-size: 0.55em;
+        font-weight: 900;
+        min-width: max-content;
+        line-height: 100%;
+    }
+
+table, thead, tbody, tfoot, tr, td, th {
+    display: revert;
+}
+
+.information {
+    --log-color: var(--accent-color);
+}
+
+.error, .fatal {
+    --log-color: var(--danger-color);
+}
+
+.verbose {
+    --log-color: var(--accent-color-50);
+}
+
+.debug {
+    --log-color: var(--color-80);
+}
+
+.warning {
+    --log-color: var(--warning-color);
+}

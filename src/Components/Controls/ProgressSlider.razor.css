@@ -2,7 +2,7 @@
     display: grid;
     grid-template: "all";
     place-items: center;
-
+    place-content: stretch;
     --height: 2rem;
     --radius: calc(var(--height) / 2);
     --glow-radius: 1rem;
@@ -41,6 +41,7 @@ progress {
         border-radius: var(--radius);
         border: 0.00001rem solid var(--accent-color); /* hack to get round borders */
         box-shadow: 0 0 var(--glow-radius) var(--radius) var(--accent-color);
+        transition: none;
     }
 
 input, input:hover, input:focus {

@@ -2,35 +2,27 @@ section {
     display: grid;
     place-items: stretch;
     z-index: 0;
+    min-height: 2rem;
+    background: var(--background-color);
 }
 
-    section * {
-        grid-row: 1;
-        grid-column: 1;
-    }
+section > * {
+    grid-area: 1 / 1;
+}
 
 meter {
-    width: 100%;
-    border: 0;
-    appearance: none;
-    position: relative;
-    background: black;
-    height: 2rem;
+    display: none;
 }
 
-    meter span {
-        position: absolute;
+    span {
         height: 100%;
         background-color: currentColor;
         box-shadow: 0 0 1rem currentColor;
     }
 
-    meter p {
-        position: absolute;
-        inset: 0;
+    p {
+        place-self: center;
         z-index: 1;
-        display: grid;
-        place-content: center;
         background-color: transparent;
         mix-blend-mode: difference;
     }

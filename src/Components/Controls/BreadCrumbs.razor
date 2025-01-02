@@ -1,4 +1,5 @@
 ﻿@using Conesoft.Blazor.Components
+@using Microsoft.AspNetCore.Components.Routing
 
 @code {
     [Parameter] public string Path { get; set; } = "";
@@ -12,16 +13,31 @@
     var breadCrumbs = segments.Select((s, i) => new BreadCrumb
     (
         Segment: s,
-        Path: $"/{string.Join("/", segments.Take(i + 1))}/"
+        Path: $"/{string.Join("/", segments.Take(i + 1))}"
     )).ToArray();
 }
 
 <UserHeaderNav NavClass="breadcrumbs">
-    <a href="/">⌂</a>
-    @foreach (var crumb in breadCrumbs)
-    {
-        @(" ▸ ")
+    <HomeButtonContent>⌂</HomeButtonContent>
 
-        <a href="@crumb.Path">@crumb.Segment</a>
-    }
+    <HomeButtonExtraContent>
+        @if (breadCrumbs.Any())
+        {
+            @("▸")
+        }
+    </HomeButtonExtraContent>
+
+    <NavContent>
+        @if (breadCrumbs.Any())
+        {
+            <NavLink Match=NavLinkMatch.All style=@($"view-transition-name: path-{breadCrumbs.First().Path.Replace("/","").Replace(" ","_")}") href="@breadCrumbs.First().Path">@breadCrumbs.First().Segment</NavLink>
+            @foreach (var crumb in breadCrumbs.Skip(1))
+            {
+                @("▸")
+
+                <NavLink style=@($"view-transition-name: path-{crumb.Path.Replace("/","").Replace(" ","_")}") Match=NavLinkMatch.All href="@crumb.Path">@crumb.Segment</NavLink>
+            }
+
+        }
+    </NavContent>
 </UserHeaderNav>

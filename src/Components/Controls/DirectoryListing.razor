@@ -1,5 +1,8 @@
 ﻿@using System.Reflection
+@using Conesoft.Tools
 @using Conesoft.Website.Files.Components.Controls.TypeRenderers
+@using Serilog
+@implements IDisposable
 @inject FileHostingPaths fileHostingPaths
 
 @rendermode InteractiveServer
@@ -9,75 +12,117 @@
 }
 
 <CascadingAuthenticationState>
-    <AuthorizeView>
-        <Authorized>
-            @if (roots.Where(r => r.Exists).SelectMany(d => d.Directories).Where(d => d.Info.Attributes.HasFlag(FileAttributes.Hidden) == false).Any())
-            {
-                <section>
-                    <ul>
-                        @foreach (var directory in roots
-                                                   .Where(r => r.Exists)
-                                                   .SelectMany(d => d.Directories)
-                                                   .Where(d => d.Info.Attributes.HasFlag(FileAttributes.Hidden) == false)
-                                                   .OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer())
-                                                   .DistinctBy(d => d.Name)
-                       )
-                        {
-                            <Directory Path="@Path" Current="@directory" />
-                        }
-                    </ul>
-                </section>
-            }
-            @if (roots.Where(r => r.Exists).SelectMany(d => d.Files).Any())
-            {
-                @foreach (var group in GroupedFiles(roots.Where(r => r.Exists).SelectMany(d => d.Files).Where(f => f.Info.Attributes.HasFlag(FileAttributes.Hidden) == false)))
+    <MetaData Path="@Path" />
+    <BreadCrumbs Path="@Path" />
+</CascadingAuthenticationState>
+
+<main>
+    <CascadingAuthenticationState>
+        <AuthorizeView>
+            <Authorized>
+                @if (Directories.Any())
                 {
                     <section>
-                        <header>@group.Key.Name.Replace("TypeRenderer", "").Replace("Default", "Files")</header>
                         <ul>
-                            @foreach (var file in group.OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer()))
+                            @foreach (var directory in Directories.OrderBy(d => d.Name, new Conesoft.Tools.NaturalSortComparer()).DistinctBy(d => d.Name))
+                            {
+                                <Directory Path="@Path" Current="@directory" />
+                            }
+                        </ul>
+                    </section>
+                }
+                @foreach (var group in GroupedFiles(Files))
+                {
+                    <section>
+                        <header>@group.Key.Name.Replace("TypeRenderer", "").Replace("Default", "File")s</header>
+                        <ul>
+                            @foreach (var file in group.OrderBy(d => d.Name, comparers[group.Key]))
                             {
                                 <File Path="@Path" Current="@file" />
                             }
                         </ul>
                     </section>
                 }
-            }
-        </Authorized>
-    </AuthorizeView>
-</CascadingAuthenticationState>
+                <StoragePoolSpace />
+            </Authorized>
+        </AuthorizeView>
+    </CascadingAuthenticationState>
+</main>
 
 @code {
-    Conesoft.Files.Directory[] roots = [];
+    static Dictionary<string, Type> extensionRendererTypes = new();
+    static Dictionary<Type, IComparer<string>> comparers = new();
 
     IEnumerable<IGrouping<Type, Conesoft.Files.File>> GroupedFiles(IEnumerable<Conesoft.Files.File> files)
     {
-        var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name.EndsWith("TypeRenderer"));
-
-        return files.GroupBy(f =>
+        if (extensionRendererTypes.Count == 0)
         {
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name.EndsWith("TypeRenderer")).ToArray();
+            var renderers = types.Select(t => (Activator.CreateInstance(t) as DefaultTypeRenderer)).NotNull().ToArray();
 
-            var type = types.FirstOrDefault(
-                t => (Activator.CreateInstance(t) as DefaultTypeRenderer)!.Extensions.Contains(f.Extension.ToLower()[1..]),
-                typeof(DefaultTypeRenderer)
-            );
+            foreach (var renderer in renderers)
+            {
+                foreach (var extension in renderer.Extensions)
+                {
+                    if (extensionRendererTypes.ContainsKey(extension) == false)
+                    {
+                        extensionRendererTypes[extension] = renderer.GetType();
+                    }
+                }
 
-            return type;
-        });
+                comparers[renderer.GetType()] = renderer.Comparer;
+            }
+        }
+        return files.GroupBy(f => extensionRendererTypes.GetValueOrDefault(f.Extension.ToLower()[1..], typeof(DefaultTypeRenderer)));
     }
 
-    protected override async Task OnInitializedAsync()
+    CancellationTokenSource? cancellationTokenSource = null;
+
+    public void Dispose()
     {
-        roots = (await fileHostingPaths.GetRoots()).Select(p => p / Path).ToArray();
-        roots.AsParallel().ForAll(async root =>
+        if (cancellationTokenSource != null)
         {
-            if (root.Exists)
+            cancellationTokenSource?.Cancel();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
+        }
+    }
+
+    IEnumerable<Conesoft.Files.File> Files = [];
+    IEnumerable<Conesoft.Files.Directory> Directories = [];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            cancellationTokenSource = new();
+            var roots = (await fileHostingPaths.GetRoots()).Select(p => p / Path).Where(r => r.Exists).ToArray();
+
+            var types = roots.Select(r => r.GetType());
+            var mapped = roots.OfType<FileHostingPaths.MappedDirectory>();
+
+            await Task.WhenAll(roots.Select(root => Task.Run(async () =>
             {
-                await foreach (var files in root.Live().Changes())
+                Log.Information("watching root {root}", root);
+                try
                 {
-                    await InvokeAsync(StateHasChanged);
+                    await foreach (var entries in root.Live(false, cancellationTokenSource.Token))
+                    {
+                        Log.Information("change in root {root}", root);
+                        Files = roots.SelectMany(r => r.Files.Visible()).ToArray();
+                        Directories = roots.SelectMany(r => r.Directories.Visible()).ToArray();
+                        await InvokeAsync(StateHasChanged);
+                    }
                 }
-            }
-        });
+                catch(Exception e)
+                {
+                    Log.Error("exception: {exception}", e);
+                }
+                finally
+                {
+                    Log.Information("end of root watch {root}", root);
+                }
+            })));
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 }

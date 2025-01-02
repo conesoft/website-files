@@ -1,4 +1,7 @@
-﻿@inject FileHostingPaths paths
+﻿@using Conesoft.Tools
+@using Serilog
+@implements IDisposable
+@inject FileHostingPaths paths
 
 <BreadCrumbs Path="@Url" />
 
@@ -19,14 +22,47 @@
     string title = "";
     string text = "";
 
-    protected override async Task OnParametersSetAsync()
+    CancellationTokenSource? cancellationTokenSource = null;
+
+    public void Dispose()
     {
-        var file = (await paths.GetRoots()).Select(p => (p / Url).AsFile).First(f => f.Exists);
+        if (cancellationTokenSource != null)
+        {
+            Log.Information("Dispose: Cancel()");
+            cancellationTokenSource?.Cancel();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
+        }
+    }
 
-        title = file.Name;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender) 
+        {
+            var file = (await paths.GetRoots()).Select(p => (p / Url).AsFile).NotNull().First();
 
-        text = await file.ReadText() ?? "";
+            title = file.Name;
 
-        await base.OnParametersSetAsync();
+            if (file != null)
+            {
+                var _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        cancellationTokenSource = new();
+
+                        await foreach (var entries in file.Live(cancellationTokenSource.Token))
+                        {
+                            using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                            using var streamReader = new StreamReader(fileStream);
+                            text = streamReader.ReadToEnd();
+                            await InvokeAsync(StateHasChanged);
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                    }
+                });
+            }
+        }
     }
 }

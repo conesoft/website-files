@@ -1,0 +1,20 @@
+﻿@using Conesoft.Website.Files.Components.Controls.FileRenderers
+@inherits DefaultTypeRenderer
+
+@code {
+    public override string[] Extensions => ["log"];
+
+    public override IComparer<string> Comparer => new Conesoft.Tools.NaturalSortComparer(inAscendingOrder: false);
+}
+    @{
+    var type = Type.GetType($"Conesoft.Website.Files.Components.Controls.FileRenderers.LogFileRenderer")
+    ?? typeof(Controls.FileRenderers.DefaultFileRenderer);
+
+    var parameters = new Dictionary<string, object>
+            {
+                ["Current"] = Current,
+                ["Path"] = Path
+            };
+}
+
+<DynamicComponent Type="@type" Parameters="@parameters" />

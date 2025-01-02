@@ -6,49 +6,14 @@
 <head prefix="og: http://ogp.me/ns#">
     <meta charset="utf-8" />
     <base href="/" />
-    <style>
-        body:has([fullscreen-viewer]) > *:not([fullscreen-viewer]) {
-            display: none;
-        }
-
-        html:has([fullscreen-viewer]) {
-            scrollbar-gutter: auto;
-        }
-
-        body:has([fullscreen-viewer]) {
-            grid-template-rows: initial;
-            grid-template: "fullscreen-viewer";
-            height: 100%;
-            place-items: stretch;
-            margin-top: 0px;
-        }
-
-        [fullscreen-viewer] {
-            grid-area: fullscreen-viewer;
-            width: 100cqw;
-            height: 100cqh;
-        }
-
-        @@media only screen and (max-aspect-ratio: 1) {
-            section[data-authorized=true] {
-                bottom: 5.5rem !important;
-            }
-        }
-    </style>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <HtmlHead Cdn="new" />
     <HeadOutlet />
 </head>
 
 <body>
-
     <Routes />
-    <script src="_framework/blazor.web.js"></script>
-
-    <footer>
-        <p>&copy; @DateTime.Today.Year</p>
-        <p>written by <a href="https://davepermen.net">davepermen</a></p>
-        <p>a <a href="https://conesoft.net">conesoft product</a> running on .NET @Environment.Version.Major</p>
-    </footer>
+    <BootBlazor />
 </body>
 
 </html>
