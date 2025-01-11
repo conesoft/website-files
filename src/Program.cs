@@ -1,4 +1,5 @@
 using Conesoft.Hosting;
+using Conesoft.PwaGenerator;
 using Conesoft.Website.Files.Components;
 using Conesoft.Website.Files.Services;
 
@@ -32,6 +33,8 @@ app
     .UseAntiforgery();
 
 app.MapUsersWithStorage();
+
+app.MapPwaInformationFromAppSettings();
 
 app.MapStaticAssets();
 app.MapFileHandlerRoute();

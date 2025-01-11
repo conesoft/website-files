@@ -1,22 +1,15 @@
-﻿img {
-    width: 1rem;
-    place-self: center;
+﻿li section {
+    grid-column: span 5;
+}
+li section > * {
+    grid-column: auto;
+}
+li section > *:first-child {
+    font-weight: 300;
+}
+li section > *:not(:first-child) {
     opacity: 0.7;
 }
-
-ul > li {
-    grid-template-columns: 1fr auto;
-    gap: 1rem;
-    place-content: stretch;
+li section > i {
+    text-align: right;
 }
-
-    ul > li section {
-        grid-template-columns: auto 1fr auto;
-        gap: 1rem;
-        position: relative;
-        padding-inline: 1rem 0;
-    }
-
-    ul > li:has(menu:hover) {
-        filter: drop-shadow(0 0rem 1rem rgba(0, 0, 0, 0.5));
-    }

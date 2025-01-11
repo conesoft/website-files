@@ -8,27 +8,19 @@
 @if (Current.Exists)
 {
     <li @key=Current.Path>
+        <img src="/file-icon.svg" />
         <section>
-            <img src="/file-icon.svg" />
             <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.Name</a>
-            <b>@Current.Info.Length.Bytes().Humanize()</b>
+            <i>@Current.Info.Length.Bytes().Humanize()</i>
         </section>
-        <Conesoft.Website.Files.Components.Controls.UX.DropDownMenu>
-            <li>
-                <a href="*/@($"{Path}/{Current.Name}")" download="" title="download">download ▼</a>
-            </li>
-            <li dangerous>
-                <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>delete ✕</a>
-            </li>
-        </Conesoft.Website.Files.Components.Controls.UX.DropDownMenu>
-@*         <menu>
+        <menu>
             <li>
                 <a href="*/@($"{Path}/{Current.Name}")" download="" title="download">▼</a>
             </li>
             <li dangerous>
                 <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
             </li>
-        </menu> *@
+        </menu>
     </li>
 }
 

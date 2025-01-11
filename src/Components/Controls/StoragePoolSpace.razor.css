@@ -4,6 +4,8 @@ section {
     z-index: 0;
     min-height: 2rem;
     background: var(--background-color);
+    grid-template-columns: auto;
+    width: 100%;
 }
 
 section > * {

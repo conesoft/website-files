@@ -9,8 +9,8 @@
 }
 
 <li style=@($"view-transition-name: path-{CurrentPath.Replace("/","").Replace(" ","_")}") @key=Current.Path>
+    <img src="/folder-icon.svg" />
     <section>
-        <img src="/folder-icon.svg" />
         <a href="@CurrentPath">@Current.Name</a>
     </section>
     <menu>
