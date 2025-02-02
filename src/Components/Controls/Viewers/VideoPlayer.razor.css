@@ -1,23 +1,40 @@
-nav {
+section {
     width: 100%;
-    max-width: 32rem;
+    /* max-width: 32rem; */
     place-self: end center;
     place-content: center;
     height: auto;
     padding: 3rem 1rem;
     transition: all 0.33s linear;
     grid-template:
-        "mute     ........ backward play     forward  ........ maximize" 4rem
-        "........ ........ ........ ........ ........ ........ ........" 0rem
-        "progress progress progress progress progress progress progress" 2rem
-        / 4rem 1fr 4rem 4rem 4rem 1fr 4rem;
+        "title title title title title title title title title" auto
+        ". mute ........ backward play forward ........ maximize . " 4rem
+        ". ........ ........ ........ ........ ........ ........ ........ . " 0rem
+        ". progress progress progress progress progress progress progress . " 2rem / auto 4rem 2rem 4rem 4rem 4rem 2rem 4rem auto;
     gap: 0.5rem;
+}
+
+nav {
+    display: contents;
+}
+
+h1 {
+    grid-column: 1 / -1;
+    -webkit-mask: linear-gradient(#000 0 0) text;
+    color: rgb(255, 255, 255, 0.125);
+    font-weight: 900;
+    font-size: 3rem;
+    backdrop-filter: saturate(100%) blur(1rem);
+    text-align: center;
+    -webkit-text-stroke: rgb(255, 255, 255, 0) 0.25rem;
+    padding: 1rem;
+    padding-block-end: 3rem;
 }
 
 nav * {
     display: grid;
 }
-
+/*
 #togglenav {
     background: transparent;
     scale: 1;
@@ -36,10 +53,9 @@ nav * {
     #togglenav > input:not(checked) + * {
         opacity: 0;
     }
-}
-
-@media(hover) {
-    nav:not(:hover) > * {
+}*/
+    /*@media(hover) {*/
+    section: not(:hover) * {
         opacity: 0; /* to kill the hw video hw acceleration darkness bug */
     }
 
@@ -47,7 +63,7 @@ nav * {
         opacity: 0;
         transition: all 0.33s linear;
     }
-}
+/*}*/
 
 ::deep video {
     background: var(--background-color);

@@ -29,7 +29,7 @@ ul > li {
     ul > li section {
         grid-template-columns: auto minmax(min-content, 20rem) minmax(min-content, 20rem) 1fr auto 6rem;
         gap: 1rem;
-    }
+    }*/
 
         ul > li section > aside {
             font-weight: 500;
@@ -47,7 +47,7 @@ ul > li {
             text-align: right;
             font-weight: 100;
         }
-
+        /*
     ul > li:has(menu:hover) {
         filter: drop-shadow(0 0rem 1rem rgba(0, 0, 0, 0.5));
     }*/
@@ -55,6 +55,7 @@ ul > li {
 .levels {
     display: flex;
     gap: 1ch;
+    justify-self: end;
 }
 
     .levels * {
@@ -66,20 +67,25 @@ ul > li {
 
 .information {
     --log-color: var(--accent-color);
+    order: 4;
 }
 
 .error, .fatal {
     --log-color: var(--danger-color);
+    order: 2;
 }
 
 .verbose {
     --log-color: var(--accent-color-50);
+    order: 1;
 }
 
 .debug {
     --log-color: var(--color-80);
+    order: 0;
 }
 
 .warning {
     --log-color: var(--warning-color);
+    order: 3;
 }

@@ -2,60 +2,63 @@
 
 @using Conesoft.Website.Files.Components.Controls
 @using Conesoft.Website.Files.Components.Controls.Viewers
+@using Conesoft.Website.Files.Services
 
 @inject FileHostingPaths paths
 @inject NavigationManager navigation
 
 @rendermode InteractiveServer
 
-@code {
-    [Parameter] public string? Path { get; set; } = "";
+<MetaData Path="@Path" />
+<BreadCrumbs Path="@Path" />
 
-    protected override void OnParametersSet() => Path ??= "";
-
-    Conesoft.Files.Directory[] roots = [];
-
-    protected override async Task OnInitializedAsync()
-    {
-        roots = await paths.GetRoots();
-    }
-}
-
-@{
-    var url = new Uri(navigation.Uri).PathAndQuery;
-    var files = roots.Select(p => (p / (Path ?? "")).AsFile);
-}
-
-@if (files.Any(f => f?.Exists ?? false) == false)
-{
-    <DirectoryListing Path="@Path" />
-}
-else
-{
-    <CascadingAuthenticationState>
-
-        @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
-        {
-            <VideoPlayer Url="@Path" />
-        }
-        else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
-        {
-            <TextFileViewer Url="@Path" />
-        }
-        else if(Path != null && (Path.EndsWith(".jpg") || Path.EndsWith(".jpeg") || Path.EndsWith(".png")))
-        {
-            <ImageViewer Url="@Path" />
-        }
-        else if(Path != null && (Path.EndsWith(".log")))
-        {
-            <LogFileViewer Url="@Path" />
-        }
-        else
-        {
-            if (string.IsNullOrWhiteSpace(Path) == false)
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            @if (paths.EntriesAt(Path).Any(e => e.IsFile) == false)
             {
-                <p>go to: <a href="/*/@Path">@Path</a></p>
+                <DirectoryListing Path="@Path" />
             }
-        }
-    </CascadingAuthenticationState>
+            else
+            {
+                @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
+                {
+                    <VideoPlayer Url="@Path" />
+                }
+                else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
+                {
+                    <TextFileViewer Url="@Path" />
+                }
+                else if (Path != null && (Path.EndsWith(".jpg") || Path.EndsWith(".jpeg") || Path.EndsWith(".png")))
+                {
+                    <ImageViewer Url="@Path" />
+                }
+                else if (Path != null && (Path.EndsWith(".log")))
+                {
+                    <LogFileViewer Url="@Path" />
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(Path) == false)
+                    {
+                        <main>
+                            <section>
+                                <ul>
+                                    <li>
+                                        <p>go to: <a href="/*/@Path">@Path</a></p>
+                                    </li>
+
+                                </ul>
+                            </section>
+                        </main>
+                    }
+                }
+            }
+        </Authorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code
+{
+    [Parameter] public string? Path { get; set; } = "";
 }

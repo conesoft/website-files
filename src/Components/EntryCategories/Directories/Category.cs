@@ -1,6 +1,6 @@
 ﻿using Conesoft.Files;
 
-namespace Conesoft.Website.Files.Components.EntryCategories.Logs;
+namespace Conesoft.Website.Files.Components.EntryCategories.Directories;
 
 public class Category
 {

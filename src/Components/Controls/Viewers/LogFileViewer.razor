@@ -1,7 +1,9 @@
 ﻿@using Conesoft.Tools
+@using Conesoft.Website.Files.Services
 @using Serilog
 @using System.Text.Json.Serialization
 @using System.Text.Json
+
 @implements IDisposable
 @inject FileHostingPaths paths
 @inject IJSRuntime runtime
@@ -102,7 +104,7 @@
                 </label>
             }
         </form>*@
-        <form>
+        @*         <form>
             @foreach (var hour in Enumerable.Range(0, 24))
             {
                 <label>
@@ -112,21 +114,18 @@
                            disabled=@(filtered.Any(f => f.Key == hour) == false) /> @($"{hour:00}:00")
                 </label>
             }
-        </form>
+        </form> *@
     </section>
 
     @foreach (var group in filtered)
     {
-        <section class="entries">
-            @{
-                var currentHour = group.First().Timestamp.ToLocalTime();
-                currentHour = currentHour.AddMinutes(-currentHour.Minute);
-                currentHour = currentHour.AddSeconds(-currentHour.Second);
+        var currentHour = group.First().Timestamp.ToLocalTime();
+        currentHour = currentHour.AddMinutes(-currentHour.Minute);
+        currentHour = currentHour.AddSeconds(-currentHour.Second);
 
-                var nextHour = currentHour.AddHours(1);
-            }
-            <header>@currentHour.ToShortTimeString() - @nextHour.ToShortTimeString()</header>
-            <ul>
+        var nextHour = currentHour.AddHours(1);
+        <section title=@($"{currentHour.ToShortTimeString()} - {nextHour.ToShortTimeString()}") class="entries">
+            <ul class="without-icon">
                 @foreach (var entry in group)
                 {
                     <li class="@entry.Level.ToLowerInvariant()" @key=@entry @onclick="@(() => ShowEntryDetails(entry))">
@@ -159,9 +158,9 @@
                             }
                         </p>
                         @if(entry.Values.TryGetValue("SourceContext", out var sourceContextJson)
-                            && sourceContextJson.ToString() is string sourceContext
-                            && sourceContext.Split(".").LastOrDefault() is string sourceContextName
-                            && string.IsNullOrWhiteSpace(sourceContextName) == false)
+                           && sourceContextJson.ToString() is string sourceContext
+                           && sourceContext.Split(".").LastOrDefault() is string sourceContextName
+                           && string.IsNullOrWhiteSpace(sourceContextName) == false)
                         {
                             <var>@sourceContextName</var>
                         }
@@ -276,53 +275,29 @@
 
     CancellationTokenSource? cancellationTokenSource = null;
 
-    public void Dispose()
-    {
-        if (cancellationTokenSource != null)
-        {
-            Log.Information("Dispose: Cancel()");
-            cancellationTokenSource?.Cancel();
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
-        }
-    }
+    public void Dispose() => cancellationTokenSource?.Cancel();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && paths.FileAt(Url) is File file)
         {
-            var file = (await paths.GetRoots()).Select(p => (p / Url).AsFile).NotNull().First();
-
             title = file.Name;
 
-            if (file != null)
+            cancellationTokenSource = await file.Live(async () =>
             {
-                var _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        cancellationTokenSource = new();
+                using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var streamReader = new StreamReader(fileStream);
 
-                        await foreach (var _ in file.Live(cancellationTokenSource.Token))
-                        {
-                            using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                            using var streamReader = new StreamReader(fileStream);
+                entries = streamReader
+                .ReadToEnd()
+                .Split(Environment.NewLine, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Select(line => JsonSerializer.Deserialize<Entry>(line))
+                .NotNull()
+                .Reverse()
+                .ToArray();
 
-                            entries = streamReader
-                                .ReadToEnd()
-                                .Split(Environment.NewLine, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                                .Select(line => JsonSerializer.Deserialize<Entry>(line))
-                                .NotNull()
-                                .Reverse()
-                                .ToArray();
-
-                            await Changed();
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
-                });
-            }
+                await Changed();
+            });
         }
     }
 

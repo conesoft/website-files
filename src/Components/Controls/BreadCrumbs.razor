@@ -30,12 +30,12 @@
     <NavContent>
         @if (breadCrumbs.Any())
         {
-            <NavLink Match=NavLinkMatch.All style=@($"view-transition-name: path-{breadCrumbs.First().Path.Replace("/","").Replace(" ","_")}") href="@breadCrumbs.First().Path">@breadCrumbs.First().Segment</NavLink>
+            <NavLink Match=NavLinkMatch.All style=@($"view-transition-name: --path-{breadCrumbs.First().Path.Replace("/","").Replace(" ","_")}") href="@breadCrumbs.First().Path">@breadCrumbs.First().Segment</NavLink>
             @foreach (var crumb in breadCrumbs.Skip(1))
             {
                 @("▸")
 
-                <NavLink style=@($"view-transition-name: path-{crumb.Path.Replace("/","").Replace(" ","_")}") Match=NavLinkMatch.All href="@crumb.Path">@crumb.Segment</NavLink>
+                <NavLink style=@($"view-transition-name: --path-{crumb.Path.Replace("/","").Replace(" ","_")}") Match=NavLinkMatch.All href="@crumb.Path">@crumb.Segment</NavLink>
             }
 
         }

@@ -1,5 +1,7 @@
 ﻿@using Conesoft.Tools
+@using Conesoft.Website.Files.Services
 @using Serilog
+
 @implements IDisposable
 @inject FileHostingPaths paths
 
@@ -23,46 +25,21 @@
     string text = "";
 
     CancellationTokenSource? cancellationTokenSource = null;
-
-    public void Dispose()
-    {
-        if (cancellationTokenSource != null)
-        {
-            Log.Information("Dispose: Cancel()");
-            cancellationTokenSource?.Cancel();
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
-        }
-    }
+    public void Dispose() => cancellationTokenSource?.Cancel();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender) 
+        if (firstRender && paths.FileAt(Url) is File file)
         {
-            var file = (await paths.GetRoots()).Select(p => (p / Url).AsFile).NotNull().First();
-
             title = file.Name;
 
-            if (file != null)
+            cancellationTokenSource = await file.Live(async () =>
             {
-                var _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        cancellationTokenSource = new();
-
-                        await foreach (var entries in file.Live(cancellationTokenSource.Token))
-                        {
-                            using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                            using var streamReader = new StreamReader(fileStream);
-                            text = streamReader.ReadToEnd();
-                            await InvokeAsync(StateHasChanged);
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
-                });
-            }
+                using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var streamReader = new StreamReader(fileStream);
+                text = streamReader.ReadToEnd();
+                await InvokeAsync(StateHasChanged);
+            });
         }
     }
 }

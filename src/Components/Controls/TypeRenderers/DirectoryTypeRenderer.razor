@@ -1,8 +1,15 @@
-﻿@inject IJSRuntime JsRuntime
+﻿@using Conesoft.Website.Files.Components.Controls.FileRenderers
+@inherits DefaultTypeRenderer
+
+@inject IJSRuntime JsRuntime
 
 @code {
-    [Parameter] public Conesoft.Files.Directory Current { get; set; } = Conesoft.Files.Directory.Invalid;
-    [Parameter] public string Path { get; set; } = "";
+    [Obsolete]
+    public override string[] Extensions => [];
+
+    public override bool InCategory(Entry entry) => entry.IsDirectory;
+
+    public override string? Name => null;
 
     private string CurrentPath => $"{Path}/{Current.Name}";
     private string CurrentPathForDownload => $"/*/{(CurrentPath.StartsWith("/") ? CurrentPath[1..] : CurrentPath)}";
@@ -33,9 +40,9 @@
     public async Task DeleteFolder()
     {
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\n{Current.Path}");
-        if (confirmed)
+        if (confirmed && Current is Directory directory)
         {
-            Current.Delete();
+            directory.Delete();
         }
     }
 }

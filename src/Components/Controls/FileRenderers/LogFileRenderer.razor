@@ -16,60 +16,81 @@
         <img src="/file-icon.svg" />
         <section>
             <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.NameWithoutExtension</a>
-            <date>@date.ToString("D", new CultureInfo("en-US"))</date>
-            <aside>@date.Humanize()</aside>
             <ul class="levels">
                 @foreach (var level in levels)
                 {
                     <li class="@level.ToLowerInvariant()">@level</li>
                 }
             </ul>
+            <date>@date.ToString("D", new CultureInfo("en-US"))</date>
+            <aside>@date.Humanize()</aside>
             <b>@Current.Info.Length.Bytes().Humanize()</b>
         </section>
         <menu>
             <li>
                 <a href="*/@($"{Path}/{Current.Name}")" download="" title="download">▼</a>
             </li>
-            <li dangerous>
-                <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
-            </li>
+            <AuthorizeView Roles="Admin, Editor">
+                <Authorized>
+                    <li dangerous>
+                        <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+                    </li>
+                </Authorized>
+            </AuthorizeView>
         </menu>
     </li>
 }
 
 @code {
 
-    List<string> levels = [];
+    HashSet<string> levels = [];
 
     string[] alllevels = ["Fatal", "Error", "Verbose", "Debug", "Warning"];
 
+    long? length = null;
+    bool render = false;
 
+    protected override bool ShouldRender() => render;
 
     protected override async Task OnParametersSetAsync()
     {
-        using var fileStream = new FileStream(Current.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        using var streamReader = new StreamReader(fileStream);
+        render = length != Current.Info.Length || levels.Count == 0;
+        length = Current.Info.Length;
 
-        var text = await streamReader.ReadToEndAsync();
-
-        if (text != null)
+        if (RendererInfo.IsInteractive)
         {
-            levels.Clear();
-            levels.Add("Information");
-            foreach (var level in alllevels)
+            using var fileStream = new FileStream(Current.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var streamReader = new StreamReader(fileStream);
+
+            var all = alllevels.ToHashSet();
+
+            int linecounter = 0;
+            var typecounter = 0;
+
+            while ((await streamReader.ReadLineAsync()) is string line)
             {
-                if (text.Contains($"\"@l\":\"{level}\""))
+                var type = alllevels.FirstOrDefault(level => line.Contains($"\"@l\":\"{level}\"")) ?? "Information";
+                levels.Add(type);
+                all.Remove(type);
+
+                linecounter++;
+                if (linecounter % 10 == 0)
                 {
-                    levels.Add(level);
+                    if (levels.Count != typecounter)
+                    {
+                        typecounter = levels.Count;
+                        StateHasChanged();
+                    }
+                }
+
+                if (all.Count == 0)
+                {
                     break;
                 }
             }
+
+            StateHasChanged();
         }
-        else
-        {
-            levels.Add("ERROR");
-        }
-        StateHasChanged();
     }
 
     public async Task DeleteFile()

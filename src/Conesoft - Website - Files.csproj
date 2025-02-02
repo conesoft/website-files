@@ -8,9 +8,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Conesoft.Hosting" Version="3.4.0" />
-		<PackageReference Include="Conesoft.ZipFolder" Version="2.0.0" />
-		<PackageReference Include="System.Management" Version="9.0.0" />
+	  <None Include="Components\Controls\FileRenderers\LogFileRenderer.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Conesoft.Hosting" Version="3.4.5" />
+		<PackageReference Include="Conesoft.ZipFolder" Version="2.1.0" />
+		<PackageReference Include="System.Management" Version="9.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>

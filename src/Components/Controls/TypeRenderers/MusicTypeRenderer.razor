@@ -4,6 +4,8 @@
 @code {
     public override string[] Extensions => ["flac", "mp3"];
 
+    public override bool InCategory(Entry entry) => entry.IsFile && Extensions.Contains(entry.AsFile!.Extension[1..]);
+
     string CleanUp(string extension)
     {
         extension = extension.Replace(".", "");
@@ -13,7 +15,7 @@
 }
 
 @{
-    var type = Type.GetType($"Conesoft.Website.Files.Components.Controls.FileRenderers.{CleanUp(Current.Extension)}FileRenderer")
+    var type = Type.GetType($"Conesoft.Website.Files.Components.Controls.FileRenderers.{CleanUp(Current.AsFile!.Extension)}FileRenderer")
         ?? typeof(Controls.FileRenderers.DefaultFileRenderer);
 
     var parameters = new Dictionary<string, object>

@@ -6,15 +6,24 @@
 
 @inject IJSRuntime js
 
+@code {
+    public string FullTitle => System.IO.Path.GetFileNameWithoutExtension(Url.Split('/').Last().Replace("%20", " ")).Replace(".", " ");
+    public string EpisodeTitle => FullTitle.Split(" ").ToArray() switch
+    {
+        var split when split.Length > 1 && split[0].Contains("x") => string.Join(" ", split.Skip(1)),
+        _ => FullTitle
+    };
+}
+ 
 <AuthorizeView>
     <Authorized>
+        <PageTitle>@FullTitle</PageTitle>
         @{
             var subtitle = Url[..^3] + "vtt";
         }
-        <title style="display: none">@Url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
         @* <video fullscreen-viewer src="/*/@Url" controls autoplay></video> *@
 
-        <BlazoredVideo @ref=video style="pointer-events: none; background-color: var(--background-color)" fullscreen-viewer autoplay VideoEventOptions="options" DurationChange="OnDurationChange" TimeUpdate="OnTimeUpdate">
+        <BlazoredVideo @ref=video style="pointer-events: none; background-color: var(--background-color)" fullscreen-viewer autoplay preload="auto" VideoEventOptions="options" DurationChange="OnDurationChange" TimeUpdate="OnTimeUpdate">
             <source src="/*/@Url" />
             <track label="English"
                    kind="subtitles"
@@ -23,9 +32,9 @@
                    default />
         </BlazoredVideo>
 
-        <label id="togglenav" fullscreen-viewer>
-
-            <nav fullscreen-viewer @onkeydown=HandleKeyboard>
+        <section fullscreen-viewer>
+            <h1 id="title">@EpisodeTitle</h1>
+            <nav @onkeydown=HandleKeyboard>
                 @if (mute == false)
                 {
                     <button id="mute" @onclick=Mute>
@@ -76,7 +85,7 @@
                                                                            Scrubbing="Scrubbing"
                                                                            style="grid-area: progress; font-size: 0.8rem" />
             </nav>
-        </label>
+        </section>
     </Authorized>
 </AuthorizeView>
 

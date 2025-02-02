@@ -2,35 +2,54 @@
 
 
 @code {
-    [Parameter] public Conesoft.Files.File Current { get; set; } = default!;
+    // [Parameter] public Conesoft.Files.File Current { get; set; } = default!;
+    [Parameter] public Conesoft.Files.Entry Current { get; set; } = default!;
     [Parameter] public string Path { get; set; } = "";
 }
-@if (Current.Exists)
+@if (Current is File file)
 {
     <li @key=Current.Path>
         <img src="/file-icon.svg" />
         <section>
             <a href="@($"{Path}/{Current.Name}")" target="_top">@Current.Name</a>
-            <i>@Current.Info.Length.Bytes().Humanize()</i>
+            <i>@file.Info.Length.Bytes().Humanize()</i>
         </section>
         <menu>
             <li>
                 <a href="*/@($"{Path}/{Current.Name}")" download="" title="download">▼</a>
             </li>
-            <li dangerous>
-                <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
-            </li>
+            <AuthorizeView Roles="Admin, Editor">
+                <Authorized>
+                    <li dangerous>
+                        <a title="delete" @onclick="@DeleteFile" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+                    </li>
+                </Authorized>
+            </AuthorizeView>
         </menu>
     </li>
 }
 
 @code {
+    long? length;
+    bool render = true;
+
+    protected override bool ShouldRender() => render;
+
+    protected override void OnParametersSet()
+    {
+        if (Current is File file)
+        {
+            render = file.Info.Length != length;
+            length = file.Info.Length;
+        }
+    }
+
     public async Task DeleteFile()
     {
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\n{Current.Path}");
-        if (confirmed)
+        if (confirmed && Current is File file)
         {
-            Current.Delete();
+            file.Delete();
         }
     }
 }
