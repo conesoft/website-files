@@ -1,0 +1,18 @@
+﻿<li>
+    <img src="/folder-icon.svg" />
+    <section>
+        <a href=""></a>
+    </section>
+    <menu>
+        <li>
+            <a href="" download="" title="download">▼</a>
+        </li>
+        <AuthorizeView Roles="Admin, Editor">
+            <Authorized>
+                <li dangerous>
+                    <a title="delete" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+                </li>
+            </Authorized>
+        </AuthorizeView>
+    </menu>
+</li>
