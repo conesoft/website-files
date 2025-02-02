@@ -1,12 +1,8 @@
 ﻿@using Conesoft.Website.Files.Components.Controls.FileRenderers
 
 @code {
-    // [Parameter] public Conesoft.Files.File Current { get; set; } = default!;
     [Parameter] public Conesoft.Files.Entry Current { get; set; } = default!;
     [Parameter] public string Path { get; set; } = "";
-
-    [Obsolete]
-    public virtual string[] Extensions => [];
 
     public virtual string? Name => this.GetType().Name.Replace("TypeRenderer", "").Replace("Default", "File");
 

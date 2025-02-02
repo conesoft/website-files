@@ -2,9 +2,7 @@
 @inherits DefaultTypeRenderer
 
 @code {
-    public override string[] Extensions => ["log"];
-
-    public override bool InCategory(Entry entry) => entry.IsFile && Extensions.Contains(entry.AsFile!.Extension[1..]);
+    public override bool InCategory(Entry entry) => entry.IsFile && "log".Contains(entry.AsFile!.Extension[1..]);
 
     private static IComparer<string> nsc = new Conesoft.Tools.NaturalSortComparer(inAscendingOrder: true);
 

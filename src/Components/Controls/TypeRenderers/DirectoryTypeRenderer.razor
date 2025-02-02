@@ -4,9 +4,6 @@
 @inject IJSRuntime JsRuntime
 
 @code {
-    [Obsolete]
-    public override string[] Extensions => [];
-
     public override bool InCategory(Entry entry) => entry.IsDirectory;
 
     public override string? Name => null;

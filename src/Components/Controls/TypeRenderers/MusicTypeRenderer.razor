@@ -2,9 +2,9 @@
 @inherits DefaultTypeRenderer
 
 @code {
-    public override string[] Extensions => ["flac", "mp3"];
+    static string[] extensions = ["flac", "mp3"];
 
-    public override bool InCategory(Entry entry) => entry.IsFile && Extensions.Contains(entry.AsFile!.Extension[1..]);
+    public override bool InCategory(Entry entry) => entry.IsFile && extensions.Contains(entry.AsFile!.Extension[1..]);
 
     string CleanUp(string extension)
     {
