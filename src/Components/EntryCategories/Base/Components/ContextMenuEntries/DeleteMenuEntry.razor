@@ -1,0 +1,21 @@
+﻿@inject IJSRuntime JsRuntime
+
+<ContextMenuEntry Name="delete" IconCharacter="✕" RiskLevel="ContextMenuEntry.Category.Dangerous" Roles="Admin, Editor" @onclick="DeleteEntry" />
+
+@code {
+    [Parameter]
+    public Entry Entry { get; set; } = default!;
+
+    public async Task DeleteEntry()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\n{Entry.Path}");
+        if (confirmed && Entry is Directory directory)
+        {
+            directory.Delete();
+        }
+        if (confirmed && Entry is File file)
+        {
+            file.Delete();
+        }
+    }
+}

@@ -1,0 +1,7 @@
+li section {
+    grid-column: span 5;
+}
+
+    li section {
+        font-weight: 100;
+    }

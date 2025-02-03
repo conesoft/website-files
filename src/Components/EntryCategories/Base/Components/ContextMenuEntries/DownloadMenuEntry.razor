@@ -1,0 +1,17 @@
+﻿@inject IJSRuntime JsRuntime
+
+<ContextMenuEntry Name="download" IconCharacter="▼" Link="@($"/*/{FixedPath}")" />
+
+@code {
+    [Parameter]
+    public string Path { get; set; } = "";
+    [Parameter]
+    public Entry Entry { get; set; } = default!;
+
+    string FixedPath => Path switch
+    {
+        null => Entry.Name,
+        string path when path.Length > 0 && path[0] == '/' => $"{path[1..]}/{Entry.Name}",
+        string path => $"{path}/{Entry.Name}"
+    };
+}

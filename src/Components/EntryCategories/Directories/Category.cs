@@ -2,9 +2,14 @@
 
 namespace Conesoft.Website.Files.Components.EntryCategories.Directories;
 
-public class Category
+public class Category : Base.Category
 {
-    public void From(IEnumerable<Entry> entries)
+    public override string? Name => null;
+
+    public override IEnumerable<Entry> OrganisedEntries => base.OrganisedEntries.DistinctBy(e => e.Name);
+
+    public override void From(IEnumerable<Entry> entries)
     {
+        this.entries = entries.Where(e => e.IsDirectory);
     }
 }

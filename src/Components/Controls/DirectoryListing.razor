@@ -7,20 +7,20 @@
 
 @implements IDisposable
 @inject FileHostingPaths fileHostingPaths
+@inject CategoryManager categoryManager
 
 <main>
-    @foreach (var group in GroupedEntries(Entries))
+    @foreach (var category in categoryManager.Group(Entries))
     {
-        <section title="@group.Key.Name">
+        <section title="@category.Name">
             <ul>
-                @foreach (var entry in group.OrderBy(e => e, group.Key.Comparer).DistinctBy(e => e.Name))
+                @foreach (var entry in category.OrganisedEntries)
                 {
-                    var parameters = new Dictionary<string, object>
+                    <DynamicComponent Type="@category.GetItemType(EntryCategories.Base.Category.CategoryItemType.ListEntry)" Parameters="@(new Dictionary<string, object>
                     {
-                        ["Current"] = entry,
+                        ["Entry"] = entry,
                         ["Path"] = Path
-                    };
-                    <DynamicComponent Type=group.Key.GetType() Parameters=parameters />
+                    })" />
                 }
             </ul>
         </section>
@@ -56,6 +56,7 @@
         cancellationTokenSource = await roots.Live(async () =>
         {
             Entries = roots.Entries().ToArray();
+            var categories = categoryManager.Group(Entries);
             await InvokeAsync(StateHasChanged);
         });
     }

@@ -54,43 +54,43 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        render = length != Current.Info.Length || levels.Count == 0;
-        length = Current.Info.Length;
+        // render = length != Current.Info.Length || levels.Count == 0;
+        // length = Current.Info.Length;
 
-        if (RendererInfo.IsInteractive)
-        {
-            using var fileStream = new FileStream(Current.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            using var streamReader = new StreamReader(fileStream);
+        // if (RendererInfo.IsInteractive)
+        // {
+        //     using var fileStream = new FileStream(Current.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        //     using var streamReader = new StreamReader(fileStream);
 
-            var all = alllevels.ToHashSet();
+        //     var all = alllevels.ToHashSet();
 
-            int linecounter = 0;
-            var typecounter = 0;
+        //     int linecounter = 0;
+        //     var typecounter = 0;
 
-            while ((await streamReader.ReadLineAsync()) is string line)
-            {
-                var type = alllevels.FirstOrDefault(level => line.Contains($"\"@l\":\"{level}\"")) ?? "Information";
-                levels.Add(type);
-                all.Remove(type);
+        //     while ((await streamReader.ReadLineAsync()) is string line)
+        //     {
+        //         var type = alllevels.FirstOrDefault(level => line.Contains($"\"@l\":\"{level}\"")) ?? "Information";
+        //         levels.Add(type);
+        //         all.Remove(type);
 
-                linecounter++;
-                if (linecounter % 10 == 0)
-                {
-                    if (levels.Count != typecounter)
-                    {
-                        typecounter = levels.Count;
-                        StateHasChanged();
-                    }
-                }
+        //         linecounter++;
+        //         if (linecounter % 10 == 0)
+        //         {
+        //             if (levels.Count != typecounter)
+        //             {
+        //                 typecounter = levels.Count;
+        //                 StateHasChanged();
+        //             }
+        //         }
 
-                if (all.Count == 0)
-                {
-                    break;
-                }
-            }
+        //         if (all.Count == 0)
+        //         {
+        //             break;
+        //         }
+        //     }
 
-            StateHasChanged();
-        }
+        //     StateHasChanged();
+        // }
     }
 
     public async Task DeleteFile()

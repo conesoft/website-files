@@ -12,13 +12,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Conesoft.Hosting" Version="3.4.5" />
+		<PackageReference Include="Conesoft.Hosting" Version="3.4.6" />
 		<PackageReference Include="Conesoft.ZipFolder" Version="2.1.0" />
 		<PackageReference Include="System.Management" Version="9.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\blazor-components\src\Blazor Components.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="Components\EntryCategories\Logs\EntryViewer.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	  <Content Update="Components\EntryCategories\Music\EntryViewer.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	  <Content Update="Components\EntryCategories\Text\EntryViewer.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	  <Content Update="Components\EntryCategories\Videos\EntryViewer.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
 	</ItemGroup>
 
 </Project>

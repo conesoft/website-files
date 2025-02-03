@@ -7,6 +7,8 @@
 @inject FileHostingPaths paths
 @inject NavigationManager navigation
 
+@inject CategoryManager categoryManager
+
 @rendermode InteractiveServer
 
 <MetaData Path="@Path" />
@@ -25,7 +27,7 @@
                 {
                     <VideoPlayer Url="@Path" />
                 }
-                else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo")))
+                else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo") || Path.EndsWith(".cs") || Path.EndsWith(".xml") || Path.EndsWith(".json") || Path.EndsWith(".csproj") || Path.EndsWith(".xaml")))
                 {
                     <TextFileViewer Url="@Path" />
                 }

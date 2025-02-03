@@ -1,18 +1,17 @@
-﻿<li>
-    <img src="/folder-icon.svg" />
-    <section>
-        <a href=""></a>
-    </section>
-    <menu>
-        <li>
-            <a href="" download="" title="download">▼</a>
-        </li>
-        <AuthorizeView Roles="Admin, Editor">
-            <Authorized>
-                <li dangerous>
-                    <a title="delete" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
-                </li>
-            </Authorized>
-        </AuthorizeView>
-    </menu>
-</li>
+﻿@using Conesoft.Website.Files.Components.EntryCategories.Base.Components
+@using Conesoft.Website.Files.Components.EntryCategories.Base.Components.ContextMenuEntries
+
+@inherits EntryCategories.Base.ListEntry
+
+<DefaultListEntry IconSource="folder-icon.svg">
+    
+    <ChildContent>
+        <a href="@Path/@Entry.Name">@Entry.Name</a>
+    </ChildContent>
+
+    <MenuList>
+        <DownloadMenuEntry Path="@Path" Entry="@Entry" />
+        <DeleteMenuEntry Entry="@Entry" />
+    </MenuList>
+
+</DefaultListEntry>

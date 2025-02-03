@@ -1,0 +1,73 @@
+﻿@if (Roles != null)
+{
+    <AuthorizeView Roles="@Roles">
+        <Authorized>
+            <li>
+                @if (Link != null)
+                {
+                    <a title="@Name"
+                       href="@Link"
+                       risky="@IsRiskLevel(ContextMenuEntry.Category.Risky)"
+                       dangerous="@IsRiskLevel(ContextMenuEntry.Category.Dangerous)">
+                        @IconCharacter
+                    </a>
+                }
+                else
+                {
+                    <button title="@Name"
+                            risky="@IsRiskLevel(ContextMenuEntry.Category.Risky)"
+                            dangerous="@IsRiskLevel(ContextMenuEntry.Category.Dangerous)"
+                            @onclick=@(() => OnClick?.InvokeAsync() ?? Task.CompletedTask)>
+                        @IconCharacter
+                    </button>
+                }
+            </li>
+        </Authorized>
+    </AuthorizeView>
+}
+else
+{
+    <li>
+        @if (Link != null)
+        {
+            <a title="@Name"
+               href="@Link"
+               risky="@IsRiskLevel(ContextMenuEntry.Category.Risky)"
+               dangerous="@IsRiskLevel(ContextMenuEntry.Category.Dangerous)">
+                @IconCharacter
+            </a>
+        }
+        else
+        {
+            <button title="@Name"
+                    risky="@IsRiskLevel(ContextMenuEntry.Category.Risky)"
+                    dangerous="@IsRiskLevel(ContextMenuEntry.Category.Dangerous)"
+                    @onclick=@(() => OnClick?.InvokeAsync() ?? Task.CompletedTask)>
+                @IconCharacter
+            </button>
+        }
+    </li>
+}
+
+@code {
+    [Parameter]
+    public string? Roles { get; set; }
+
+    public enum Category { Default, Risky, Dangerous }
+    [Parameter]
+    public Category RiskLevel { get; set; } = ContextMenuEntry.Category.Default;
+
+    [Parameter]
+    public string Name { get; set; } = default!;
+
+    [Parameter]
+    public string IconCharacter { get; set; } = default!;
+
+    [Parameter]
+    public string? Link { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs>? OnClick { get; set; }
+
+    private bool IsRiskLevel(ContextMenuEntry.Category category) => RiskLevel == category;
+}

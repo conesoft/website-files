@@ -33,7 +33,7 @@
         </BlazoredVideo>
 
         <section fullscreen-viewer>
-            <h1 id="title">@EpisodeTitle</h1>
+            <h1 id="title">@EpisodeTitle.Trim(' ', '-')</h1>
             <nav @onkeydown=HandleKeyboard>
                 @if (mute == false)
                 {

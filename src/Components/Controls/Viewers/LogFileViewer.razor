@@ -8,10 +8,6 @@
 @inject FileHostingPaths paths
 @inject IJSRuntime runtime
 
-<BreadCrumbs Path="@Url" />
-
-<MetaData Path="@Url" />
-
 <dialog id="currentEntryDialog" @onclick="@(() => ShowEntryDetails(null))" class="@(current?.Level.ToLowerInvariant() ?? null)">
     @if (current is Entry currentEntry)
     {
