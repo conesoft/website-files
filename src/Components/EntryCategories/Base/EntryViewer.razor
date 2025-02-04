@@ -1,3 +1,4 @@
 ﻿@code {
-    [Parameter] public Entry? Entry { get; set; }
+    [Parameter] public Entry Entry { get; set; } = default!;
+    [Parameter] public string Path { get; set; } = default!;
 }

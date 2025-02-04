@@ -14,6 +14,10 @@ public abstract class Category
     }
 
     static protected readonly IComparer<string> naturalSortComparer = new NaturalSortComparer();
+    
+    static private readonly Type baseType = typeof(Category);
+    static private readonly Type[] types = baseType.Assembly.GetTypes();
+    
     protected IEnumerable<Entry> entries = [];
 
     public IEnumerable<Entry> Entries => entries;
@@ -22,7 +26,11 @@ public abstract class Category
     public virtual string Namespace => GetType()?.Namespace?.Split(".").Last() ?? throw new Exception("Namespace not found in Category");
     public virtual string? Name => Safe.Try(() => Namespace);
 
-    public Type? GetItemType(CategoryItemType itemType) => GetType().Assembly.GetTypes().Where(t => t.Namespace == GetType().Namespace && t.Name == itemType.ToString()).FirstOrDefault();
+    public Type GetItemType(CategoryItemType itemType) =>
+        types.Where(t => t.Namespace == GetType().Namespace && t.Name == itemType.ToString()).FirstOrDefault()
+        ??
+        types.Where(t => t.Namespace == baseType.Namespace && t.Name == itemType.ToString()).First()
+        ;
 
     public abstract void From(IEnumerable<Entry> entries);
 }

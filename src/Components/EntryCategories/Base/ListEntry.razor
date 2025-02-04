@@ -1,7 +1,17 @@
 ﻿@using Conesoft.Website.Files.Components.EntryCategories.Base.Components
+@using Conesoft.Website.Files.Components.EntryCategories.Base.Components.ContextMenuEntries
 
 <DefaultListEntry IconSource="file-icon.svg">
-    <a href="@Path/@Entry.Name">@Entry.Name</a>
+    
+    <ChildContent>
+        <a href="@Path/@Entry.Name">@Entry.Name</a>
+    </ChildContent>
+
+    <MenuList>
+        <DownloadMenuEntry Path="@Path" Entry="@Entry" />
+        <DeleteMenuEntry Entry="@Entry" />
+    </MenuList>
+
 </DefaultListEntry>
 
 @code {

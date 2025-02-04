@@ -25,9 +25,6 @@
 	  <Content Update="Components\EntryCategories\Logs\EntryViewer.razor">
 	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 	  </Content>
-	  <Content Update="Components\EntryCategories\Music\EntryViewer.razor">
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	  </Content>
 	  <Content Update="Components\EntryCategories\Text\EntryViewer.razor">
 	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 	  </Content>
