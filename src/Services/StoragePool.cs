@@ -1,4 +1,4 @@
-﻿using Conesoft.Hosting;
+﻿using Conesoft.Tools;
 using System.Management;
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079")]

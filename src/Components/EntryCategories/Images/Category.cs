@@ -7,6 +7,6 @@ public class Category : Base.Category
     public override void From(IEnumerable<Entry> entries)
     {
         string[] extensions = ["jpg", "jpeg", "png", "gif"];
-        this.entries = entries.Files().Where(f => extensions.Contains(f.Extension[1..]));
+        this.entries = entries.Files().Where(f => extensions.Contains(f.Extension));
     }
 }
