@@ -52,7 +52,7 @@ public class CategoryManager
         };
 
         return categories
-            .Where(c => c.Entries.Any())
+            .Where(c => c.OrganisedEntries.Any())
             ;
     }
 }

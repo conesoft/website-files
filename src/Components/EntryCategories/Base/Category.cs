@@ -1,5 +1,4 @@
 ﻿using Conesoft.Files;
-using Conesoft.Hosting;
 using Conesoft.Tools;
 
 namespace Conesoft.Website.Files.Components.EntryCategories.Base;
@@ -21,7 +20,7 @@ public abstract class Category
     protected IEnumerable<Entry> entries = [];
 
     public IEnumerable<Entry> Entries => entries;
-    public virtual IEnumerable<Entry> OrganisedEntries => entries.OrderBy(e => e.Name, naturalSortComparer);
+    public virtual IEnumerable<Entry> OrganisedEntries => entries.Visible().OrderBy(e => e.Name, naturalSortComparer);
 
     public virtual string Namespace => GetType()?.Namespace?.Split(".").Last() ?? throw new Exception("Namespace not found in Category");
     public virtual string? Name => Safe.Try(() => Namespace);

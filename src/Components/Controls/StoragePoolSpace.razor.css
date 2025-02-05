@@ -8,23 +8,26 @@ section {
     width: 100%;
 }
 
-section > * {
-    grid-area: 1 / 1;
-}
+    section > * {
+        grid-area: 1 / 1;
+    }
 
 meter {
     display: none;
 }
 
-    span {
-        height: 100%;
-        background-color: currentColor;
-        box-shadow: 0 0 1rem currentColor;
-    }
+span {
+    height: 100%;
+    background-color: currentColor;
+    box-shadow: 0 0 1rem currentColor;
+}
 
-    p {
-        place-self: center;
-        z-index: 1;
-        background-color: transparent;
-        mix-blend-mode: difference;
-    }
+p {
+    place-self: center;
+    z-index: 1;
+    background-color: transparent;
+    mix-blend-mode: difference;
+    width: 100%;
+    text-align: center;
+    height: 100%;
+}
