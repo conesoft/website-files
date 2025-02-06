@@ -1,1 +1,343 @@
-﻿@inherits Base.EntryViewer
+﻿@using Conesoft.Website.Files.Components.Controls
+@using Conesoft.Tools
+@using Conesoft.Website.Files.Services
+@using Serilog
+@using System.Text.Json.Serialization
+@using System.Text.Json
+
+@inherits Base.EntryViewer
+
+@implements IDisposable
+@inject FileHostingPaths paths
+@inject IJSRuntime runtime
+
+<dialog id="currentEntryDialog" @onclick="@(() => ShowEntryDetails(null))" class="@(current?.Level.ToLowerInvariant() ?? null)">
+    @if (current is Entry currentEntry)
+    {
+        <header>
+            <label>@currentEntry.Level</label>
+            <time datetime="@currentEntry.Timestamp.ToLocalTime().ToString("s")" title="@currentEntry.Timestamp.ToLocalTime().ToShortDateString() @currentEntry.Timestamp.ToLocalTime().ToShortTimeString()">@currentEntry.Timestamp.Humanize()</time>
+        </header>
+        <p>
+            @if (currentEntry.MessageTemplate != null)
+            {
+                foreach (var segment in currentEntry.MessageTemplate.Split(['{', '}'], StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var key = segment.StartsWith("@") ? segment[1..] : segment;
+                    if (currentEntry.Values.TryGetValue(key, out JsonElement element))
+                    {
+                        var value = RenderValueByType(element);
+                        Console.WriteLine($"value: '{value}'");
+
+                        if (string.IsNullOrWhiteSpace(value) == false)
+                        {
+                            <var id="@key" title="@key.ToLowerInvariant()">@value</var>
+                        }
+                    }
+                    else
+                    {
+                        @segment
+                    }
+                }
+            }
+            else
+            {
+                @currentEntry.Message
+            }
+        </p>
+        @if (currentEntry.Values.Any())
+        {
+            <table>
+                @foreach (var (key, value) in currentEntry.Values)
+                {
+                    <tr>
+                        <th>@key</th>
+                        <td><var id="@key">@RenderValueByType(value)</var></td>
+                    </tr>
+                }
+            </table>
+            <style>
+                @foreach (var (key, value) in currentEntry.Values)
+                {
+                    @($"dialog:has(#{key}:hover) #{key} {{ font-weight: 900; color: black; background: var(--log-color) }}")
+                }
+            </style>
+        }
+    }
+</dialog>
+
+<main>
+    <section class="info">
+        <b>@entries.Length active log entries</b>
+        <i>@filtered.Sum(e => e.Count()) displayed</i>
+    </section>
+    <section class="filter">
+        <form>
+            <label>
+                <input type="checkbox" @bind="@ShowInformation" @bind:after="Changed" disabled="@HasInformation" /> information
+            </label>
+            <label>
+                <input type="checkbox" @bind="@ShowWarning" @bind:after="Changed" disabled="@HasWarnings" /> warning
+            </label>
+            <label>
+                <input type="checkbox" @bind="@ShowError" @bind:after="Changed" disabled="@HasErrors" /> error
+            </label>
+            <label>
+                <input type="checkbox" @bind="@ShowFatal" @bind:after="Changed" disabled="@HasFatal" /> fatal
+            </label>
+            <label>
+                <input type="checkbox" @bind="@ShowDebug" @bind:after="Changed" disabled="@HasDebug" /> debug
+            </label>
+            <label>
+                <input type="checkbox" @bind="@ShowVerbose" @bind:after="Changed" disabled="@HasVerbose" /> verbose
+            </label>
+            <label>
+                <input type="checkbox" @bind="@Show3rdParty" @bind:after="Changed" disabled="@Has3rdParty" /> 3rd party
+            </label>
+        </form>@*
+        <form>
+            @foreach(var key in SourceContexts.Keys)
+            {
+                <label>
+                    <input type="checkbox" @bind="@SourceContexts[key]" @bind:after="Changed" /> @key.Split(".").LastOrDefault()
+                </label>
+            }
+        </form>*@
+        @*         <form>
+            @foreach (var hour in Enumerable.Range(0, 24))
+            {
+                <label>
+                    <input type="checkbox"
+                           name="@hour"
+                           checked=@(hour == filtered.LastOrDefault()?.Key)
+                           disabled=@(filtered.Any(f => f.Key == hour) == false) /> @($"{hour:00}:00")
+                </label>
+            }
+        </form> *@
+    </section>
+
+    @foreach (var group in filtered)
+    {
+        var currentHour = group.First().Timestamp.ToLocalTime();
+        currentHour = currentHour.AddMinutes(-currentHour.Minute);
+        currentHour = currentHour.AddSeconds(-currentHour.Second);
+
+        var nextHour = currentHour.AddHours(1);
+        <section title=@($"{currentHour.ToShortTimeString()} - {nextHour.ToShortTimeString()}") class="entries">
+            <ul class="without-icon">
+                @foreach (var entry in group)
+                {
+                    <li class="@entry.Level.ToLowerInvariant()" @key=@entry @onclick="@(() => ShowEntryDetails(entry))">
+                        <label>@entry.LevelDescriptor</label>
+                        <time datetime="@entry.Timestamp.ToLocalTime().ToString("s")" title="@entry.Timestamp.ToLocalTime().ToShortDateString() @entry.Timestamp.ToLocalTime().ToShortTimeString()">@entry.Timestamp.Humanize()</time>
+                        <p>
+                            @if (entry.MessageTemplate != null)
+                            {
+                                foreach (var segment in entry.MessageTemplate.Split(['{', '}'], StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    var key = segment.StartsWith("@") ? segment[1..] : segment;
+                                    if (entry.Values.TryGetValue(key, out JsonElement element))
+                                    {
+                                        var value = RenderValueByType(element);
+
+                                        if (string.IsNullOrWhiteSpace(value) == false)
+                                        {
+                                            <var title="@key.ToLowerInvariant()">@value.Replace(" ", " ")</var>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @segment.Replace(" ", " ")
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                @entry.Message
+                            }
+                        </p>
+                        @if (entry.Values.TryGetValue("SourceContext", out var sourceContextJson)
+                       && sourceContextJson.ToString() is string sourceContext
+                       && sourceContext.Split(".").LastOrDefault() is string sourceContextName
+                       && string.IsNullOrWhiteSpace(sourceContextName) == false)
+                        {
+                            <var>@sourceContextName</var>
+                        }
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+</main>
+
+@code {
+    bool ShowInformation = true;
+    bool ShowWarning = true;
+    bool ShowError = true;
+    bool ShowFatal = true;
+    bool ShowDebug = false;
+    bool ShowVerbose = false;
+
+    bool Show3rdParty = false;
+
+    bool HasInformation = true;
+    bool HasWarnings = true;
+    bool HasErrors = true;
+    bool HasFatal = true;
+    bool HasDebug = true;
+    bool HasVerbose = true;
+
+    bool Has3rdParty = true;
+
+    Dictionary<string, bool> SourceContexts = [];
+
+    bool?[] hours = new bool?[24];
+
+    Entry? current = default;
+
+    async Task ShowEntryDetails(Entry? entry)
+    {
+        current = entry;
+        if (entry != null)
+        {
+            await ShowDialog("currentEntryDialog");
+        }
+        else
+        {
+            await ExitDialog("currentEntryDialog");
+        }
+    }
+
+    static string RenderValueByType(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Object && element.TryGetProperty("$type", out var typeElement))
+        {
+            var type = typeElement.ValueKind == JsonValueKind.String ? typeElement.GetString() : string.Empty;
+            return type switch
+            {
+                "Bytes" => element.GetProperty("Value").GetInt64().Bytes().ToString(),
+                _ => element.ToString()
+            };
+        }
+        return element.ToString();
+    }
+
+    async Task Changed()
+    {
+        SourceContexts = entries
+            .Select(e => e.Values.ContainsKey("SourceContext") ? e.Values["SourceContext"].ToString() : "")
+            .Where(sc => sc != "")
+            .Distinct()
+            .ToDictionary(sc => sc, sc => true)
+            ;
+
+        filtered = entries
+            .Where(e => e.LevelDescriptor switch
+            {
+                "INF" => ShowInformation,
+                "WRN" => ShowWarning,
+                "ERR" => ShowError,
+                "FTL" => ShowFatal,
+                "DBG" => ShowDebug,
+                "VRB" => ShowVerbose,
+                _ => false
+            })
+            .Where(e => e.Values.ContainsKey("SourceContext") == true ? Show3rdParty : true)
+            .GroupBy(e => e.Timestamp.ToLocalTime().Hour)
+            .ToArray();
+
+        HasInformation = entries.Any(e => e.LevelDescriptor == "INF") == false;
+        HasWarnings = entries.Any(e => e.LevelDescriptor == "WRN") == false;
+        HasErrors = entries.Any(e => e.LevelDescriptor == "ERR") == false;
+        HasFatal = entries.Any(e => e.LevelDescriptor == "FTL") == false;
+        HasDebug = entries.Any(e => e.LevelDescriptor == "DBG") == false;
+        HasVerbose = entries.Any(e => e.LevelDescriptor == "VRB") == false;
+
+        Has3rdParty = entries.Any(e => e.Values.ContainsKey("SourceContext")) == false;
+
+        foreach (var i in Enumerable.Range(0, 24))
+        {
+            var hour = i + 1;
+            //hours[i] = filtered.Any(f => f.Key == hour) ? ;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    string title = "";
+    Entry[] entries = [];
+    IGrouping<int, Entry>[] filtered = [];
+
+    CancellationTokenSource? cancellationTokenSource = null;
+
+    public void Dispose() => cancellationTokenSource?.Cancel();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && paths.FileAt(Path) is File file)
+        {
+            title = file.Name;
+
+            cancellationTokenSource = await file.Live(async () =>
+            {
+                using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var streamReader = new StreamReader(fileStream);
+
+                entries = streamReader
+                .ReadToEnd()
+                .Split(Environment.NewLine, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Select(line => JsonSerializer.Deserialize<Entry>(line))
+                .NotNull()
+                .Reverse()
+                .ToArray();
+
+                await Changed();
+            });
+        }
+    }
+
+    public async Task ShowDialog(string id)
+    {
+        await runtime.InvokeVoidAsync($"{id}.showModal");
+    }
+
+    public async Task ExitDialog(string id)
+    {
+        await runtime.InvokeVoidAsync($"{id}.close");
+    }
+
+    record Entry(
+        [property: JsonPropertyName("@t")] DateTime Timestamp,
+        [property: JsonPropertyName("@m")] string? Message,
+        [property: JsonPropertyName("@mt")] string? MessageTemplate,
+        [property: JsonPropertyName("@l")] string Level = "Information"
+        )
+    {
+        /// <summary>
+        /// @t	Timestamp	An ISO 8601 timestamp	Yes
+        /// @m	Message	A fully-rendered message describing the event
+        /// @mt	Message Template	Alternative to Message; specifies a message template over the event's properties that provides for rendering into a textual description of the event
+        /// @l	Level	An implementation-specific level identifier (string or number)	Absence implies "informational"
+        /// @x	Exception	A language-dependent error representation potentially including backtrace
+        /// @i	Event id	An implementation specific event id (string or number)
+        /// @r	Renderings	If @mt includes tokens with programming-language-specific formatting, an array of pre-rendered values for each such token	May be omitted; if present, the count of renderings must match the count of formatted tokens exactly
+        /// @tr	Trace id	The id of the trace that was active when the event was created, if any
+        /// @sp	Span id	The id of the span that was active when the event was created, if any
+        /// </summary>
+
+        [JsonExtensionData]
+        public Dictionary<string, JsonElement> Values { get; set; } = [];
+
+        public string LevelDescriptor => Level switch
+        {
+            "Fatal" => "FTL",
+            "Error" => "ERR",
+            "Verbose" => "VRB",
+            "Debug" => "DBG",
+            "Warning" => "WRN",
+            "Information" => "INF",
+            _ => "INF"
+        };
+    }
+}

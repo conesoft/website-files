@@ -1,6 +1,7 @@
-﻿@using Conesoft.Files
+﻿@inherits Base.EntryViewer
+
+@using Conesoft.Files
 @using System.Reflection
-@using Conesoft.Website.Files.Components.Controls.TypeRenderers
 @using Conesoft.Website.Files.Services
 
 @inject FileHostingPaths paths
@@ -8,8 +9,8 @@
 
 <AuthorizeView>
     <Authorized>
-        <title style="display: none">@Url.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
-        <img fullscreen-viewer src="/*/@Url" />
+        <title style="display: none">@Path.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
+        <img fullscreen-viewer src="/*/@Path" />
 
         <label id="togglenav" fullscreen-viewer>
 
@@ -28,9 +29,6 @@
 
 
 @code {
-    [Parameter]
-    public string Url { get; set; } = "";
-
     string? previousLink = null;
     string? nextLink = null;
 
@@ -38,17 +36,18 @@
     {
         var roots = paths.GetRoots();
 
-        var fileroot = string.Join("/", Url.Split("/").SkipLast(1));
+        var fileroot = string.Join("/", Path.Split("/").SkipLast(1));
 
         var directories = roots.Select(p => (p / (fileroot ?? "")).AsDirectory).NotNull();
 
-        var images = FilteredFiles(directories.SelectMany(d => d.Files));
+        /* needs fixing, needs filter for categories own files .. */
+        var images = directories.SelectMany(d => d.Files);
 
-        var current = roots.Select(p => (p / (Url.Replace("/", "\\") ?? "")).AsFile).NotNull().First();
+        var current = roots.Select(p => (p / (Path.Replace("/", "\\") ?? "")).AsFile).NotNull().First();
         var previous = images.Reverse().SkipWhile(i => i.Path != current.Path).Skip(1).FirstOrDefault();
         var next = images.SkipWhile(i => i.Path != current.Path).Skip(1).FirstOrDefault();
 
-        var segments = Url.Split("/").Count();
+        var segments = Path.Split("/").Count();
 
         previousLink = previous != null ? string.Join("/", previous.Path.Split("\\").Reverse().Take(segments).Reverse()) : null;
         nextLink = next != null ? string.Join("/", next.Path.Split("\\").Reverse().Take(segments).Reverse()) : "";
@@ -62,13 +61,5 @@
     public void GoToNext()
     {
         nav.NavigateTo(nextLink!, forceLoad: true);
-    }
-
-    static Dictionary<string, Type> extensionRendererTypes = new();
-
-    IEnumerable<Conesoft.Files.File> FilteredFiles(IEnumerable<Conesoft.Files.File> files)
-    {
-        var imageType = Activator.CreateInstance<ImageTypeRenderer>();
-        return files.Where(f => imageType.InCategory(f)).OrderBy(f => f, imageType.Comparer);
     }
 }

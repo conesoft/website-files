@@ -1,0 +1,15 @@
+﻿@using Conesoft.Website.Files.Components.Controls
+@using Conesoft.Website.Files.Components.EntryCategories.Base.Components
+@using Conesoft.Website.Files.Components.EntryCategories.Base.Components.ContextMenuEntries
+
+@inherits Base.EntryViewer
+
+<main>
+    <section title="@Category.Name">
+        <ul>
+            <DefaultListEntry IconSource="file-icon.svg">
+                <a href="*/@Path">@Entry.Name</a>
+            </DefaultListEntry>
+        </ul>
+    </section>
+</main>

@@ -54,15 +54,15 @@ nav * {
         opacity: 0;
     }
 }*/
-    /*@media(hover) {*/
-    section: not(:hover) * {
-        opacity: 0; /* to kill the hw video hw acceleration darkness bug */
-    }
+/*@media(hover) {*/
+section: not(:hover) * {
+    opacity: 0; /* to kill the hw video hw acceleration darkness bug */
+}
 
-    ::deep:not(:hover) .slider {
-        opacity: 0;
-        transition: all 0.33s linear;
-    }
+::deep:not(:hover) .slider {
+    opacity: 0;
+    transition: all 0.33s linear;
+}
 /*}*/
 
 ::deep video {

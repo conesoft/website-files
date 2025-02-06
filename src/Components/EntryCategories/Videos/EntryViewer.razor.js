@@ -14,7 +14,7 @@ export function registerGlobalKeyboardEvents(assembly, methodName) {
             };
         }
     };
-    
+
     window.document.addEventListener('keydown', function (e) {
         DotNet.invokeMethodAsync(assembly, methodName, serializeEvent(e))
     });

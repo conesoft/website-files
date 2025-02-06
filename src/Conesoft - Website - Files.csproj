@@ -8,7 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Include="Components\Controls\FileRenderers\LogFileRenderer.razor" />
+	  <Compile Remove="Components\Controls\FileRenderers\**" />
+	  <Content Remove="Components\Controls\FileRenderers\**" />
+	  <EmbeddedResource Remove="Components\Controls\FileRenderers\**" />
+	  <None Remove="Components\Controls\FileRenderers\**" />
 	</ItemGroup>
 
 	<ItemGroup>

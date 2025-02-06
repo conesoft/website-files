@@ -1,1 +1,40 @@
 ﻿@inherits Base.EntryViewer
+
+@using Conesoft.Tools
+@using Conesoft.Website.Files.Services
+@using Serilog
+
+@implements IDisposable
+@inject FileHostingPaths paths
+
+<main>
+    <section>
+        <pre>
+            @text
+        </pre>
+    </section>
+</main>
+
+@code {
+    string title = "";
+    string text = "";
+
+    CancellationTokenSource? cancellationTokenSource = null;
+    public void Dispose() => cancellationTokenSource?.Cancel();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && paths.FileAt(Path) is File file)
+        {
+            title = file.Name;
+
+            cancellationTokenSource = await file.Live(async () =>
+            {
+                using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var streamReader = new StreamReader(fileStream);
+                text = streamReader.ReadToEnd();
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+    }
+}

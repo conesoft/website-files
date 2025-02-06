@@ -1,7 +1,6 @@
 ﻿@page "/{*Path}"
 
 @using Conesoft.Website.Files.Components.Controls
-@using Conesoft.Website.Files.Components.Controls.Viewers
 @using Conesoft.Website.Files.Services
 
 @inject FileHostingPaths paths
@@ -17,44 +16,15 @@
 <CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized>
-            @if (paths.EntriesAt(Path).Any(e => e.IsFile) == false)
+            @if (categoryManager.Group(paths.EntriesAt(Path)).FirstOrDefault() is EntryCategories.Base.Category category)
             {
-                <DirectoryListing Path="@Path" />
-            }
-            else
-            {
-                @if (Path != null && (Path.EndsWith(".mkv") || Path.EndsWith(".mp4")))
+                var entryViewer = category.GetItemTypeOrFallback(EntryCategories.Base.Category.CategoryItemType.EntryViewer);
+                <DynamicComponent Type="@entryViewer" Parameters="@(new Dictionary<string, object>
                 {
-                    <VideoPlayer Url="@Path" />
-                }
-                else if (Path != null && (Path.EndsWith(".txt") || Path.EndsWith(".nfo") || Path.EndsWith(".cs") || Path.EndsWith(".xml") || Path.EndsWith(".json") || Path.EndsWith(".csproj") || Path.EndsWith(".xaml")))
-                {
-                    <TextFileViewer Url="@Path" />
-                }
-                else if (Path != null && (Path.EndsWith(".jpg") || Path.EndsWith(".jpeg") || Path.EndsWith(".png")))
-                {
-                    <ImageViewer Url="@Path" />
-                }
-                else if (Path != null && (Path.EndsWith(".log")))
-                {
-                    <LogFileViewer Url="@Path" />
-                }
-                else
-                {
-                    if (string.IsNullOrWhiteSpace(Path) == false)
-                    {
-                        <main>
-                            <section>
-                                <ul>
-                                    <li>
-                                        <p>go to: <a href="/*/@Path">@Path</a></p>
-                                    </li>
-
-                                </ul>
-                            </section>
-                        </main>
-                    }
-                }
+                    ["Category"] = category,
+                    ["Entry"] = category.OrganisedEntries.First(),
+                    ["Path"] = paths.PathAt(Path)
+                })" />
             }
         </Authorized>
     </AuthorizeView>

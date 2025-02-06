@@ -1,1 +1,52 @@
-﻿@inherits Base.EntryViewer
+﻿@using Conesoft.Website.Files.Components.Controls
+
+@inherits Base.EntryViewer
+
+@using Conesoft.Website.Files.Services
+@using System.Reflection
+@using Conesoft.Tools
+@using Microsoft.AspNetCore.Authorization
+@using Serilog
+
+@implements IDisposable
+@inject FileHostingPaths fileHostingPaths
+@inject CategoryManager categoryManager
+
+<main>
+    @foreach (var category in categoryManager.Group(Entries))
+    {
+        <section title="@category.Name">
+            <ul>
+                @foreach (var entry in category.OrganisedEntries)
+                {
+                    <DynamicComponent Type="@category.GetItemTypeOrFallback(EntryCategories.Base.Category.CategoryItemType.ListEntry)" Parameters="@(new Dictionary<string, object>
+                    {
+                        ["Category"] = category,
+                        ["Entry"] = entry,
+                        ["Path"] = Path
+                    })" />
+                }
+            </ul>
+        </section>
+    }
+    <StoragePoolSpace />
+</main>
+
+@code {
+    IEnumerable<Conesoft.Files.Entry> Entries = [];
+
+    CancellationTokenSource? cancellationTokenSource = null;
+    public void Dispose() => cancellationTokenSource?.Cancel();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var roots = fileHostingPaths.DirectoriesAt(Path);
+
+        cancellationTokenSource = await roots.Live(async () =>
+        {
+            Entries = roots.Entries().ToArray();
+            var categories = categoryManager.Group(Entries);
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+}

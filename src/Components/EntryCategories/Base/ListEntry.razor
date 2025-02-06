@@ -2,7 +2,7 @@
 @using Conesoft.Website.Files.Components.EntryCategories.Base.Components.ContextMenuEntries
 
 <DefaultListEntry IconSource="file-icon.svg">
-    
+
     <ChildContent>
         <a href="@Path/@Entry.Name">@Entry.Name</a>
     </ChildContent>
@@ -17,4 +17,5 @@
 @code {
     [Parameter] public Entry Entry { get; set; } = default!;
     [Parameter] public string Path { get; set; } = default!;
+    [Parameter] public Category Category { get; set; } = default!;
 }

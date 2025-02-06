@@ -25,12 +25,13 @@ class FileHostingPaths(Hosting.HostEnvironment environment, IHttpContextAccessor
         return paths;
     }
 
-    public Conesoft.Files.File? FileAt(string? path) => GetRoots().Select(p => (p / (path ?? "")).AsFile).NotNull().FirstOrDefault();
-    public Conesoft.Files.File[] FilesAt(string? path) => GetRoots().Select(p => (p / (path ?? "")).AsFile).NotNull().ToArray();
-    public Conesoft.Files.Entry? EntryAt(string? path) => GetRoots().Select(p => (p / (path ?? ""))).NotNull().FirstOrDefault();
-    public Conesoft.Files.Entry[] EntriesAt(string? path) => GetRoots().Select(p => (p / (path ?? ""))).NotNull().ToArray();
-    public Conesoft.Files.Directory? DirectoryAt(string? path) => GetRoots().Select(p => (p / (path ?? "")).AsDirectory).NotNull().FirstOrDefault();
-    public Conesoft.Files.Directory[] DirectoriesAt(string? path) => GetRoots().Select(p => (p / (path ?? "")).AsDirectory).NotNull().ToArray();
+    public string PathAt(string? path) => path ?? "";
+    public Conesoft.Files.File? FileAt(string? path) => GetRoots().Select(p => (p / PathAt(path)).AsFile).NotNull().FirstOrDefault();
+    public Conesoft.Files.File[] FilesAt(string? path) => GetRoots().Select(p => (p / PathAt(path)).AsFile).NotNull().ToArray();
+    public Conesoft.Files.Entry? EntryAt(string? path) => GetRoots().Select(p => (p / PathAt(path))).NotNull().FirstOrDefault();
+    public Conesoft.Files.Entry[] EntriesAt(string? path) => GetRoots().Select(p => (p / PathAt(path))).NotNull().ToArray();
+    public Conesoft.Files.Directory? DirectoryAt(string? path) => GetRoots().Select(p => (p / PathAt(path)).AsDirectory).NotNull().FirstOrDefault();
+    public Conesoft.Files.Directory[] DirectoriesAt(string? path) => GetRoots().Select(p => (p / PathAt(path)).AsDirectory).NotNull().ToArray();
 
     record UserMappings(Dictionary<string, string> Mapped, string[] Roots);
 
