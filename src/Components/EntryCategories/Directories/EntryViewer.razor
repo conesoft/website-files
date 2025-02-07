@@ -39,16 +39,4 @@
 
         return Task.CompletedTask;
     }
-
-    // protected override async Task OnParametersSetAsync()
-    // {
-    //     var roots = HostingPaths.DirectoriesAt(Path);
-
-    //     cancellationTokenSource = await roots.Live(async () =>
-    //     {
-    //         Entries = roots.Entries().ToArray();
-    //         var categories = categoryManager.Group(Entries);
-    //         await InvokeAsync(StateHasChanged);
-    //     });
-    // }
 }
