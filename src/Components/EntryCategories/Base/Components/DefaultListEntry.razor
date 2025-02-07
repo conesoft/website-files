@@ -1,18 +1,16 @@
-<li>
-    @if (IconSource != null)
-    {
-        <img src="/@IconSource" />
-    }
-    @if (ChildContent != null)
-    {
-        <section>
-            @ChildContent
-        </section>
-    }
-    <menu>
-        @MenuList
-    </menu>
-</li>
+@if (IconSource != null)
+{
+    <img src="/@IconSource" />
+}
+@if (ChildContent != null)
+{
+    <section>
+        @ChildContent
+    </section>
+}
+<menu>
+    @MenuList
+</menu>
 
 @code {
     [Parameter]

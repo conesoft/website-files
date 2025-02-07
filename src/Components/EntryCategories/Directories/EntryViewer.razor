@@ -10,19 +10,22 @@
 
 @inject CategoryManager categoryManager
 
-<main>
+<main style="view-transition-name: --main-content">
     @foreach (var category in categoryManager.Group(Entries))
     {
-        <section title="@category.Name">
+        <section style="view-transition-name: --category-@(category.Name?.Replace(" ", "") ?? "")" title="@category.Name">
             <ul>
                 @foreach (var entry in category.OrganisedEntries)
                 {
-                    <DynamicComponent Type="@category.GetItemTypeOrFallback(EntryCategories.Base.Category.CategoryItemType.ListEntry)" Parameters="@(new Dictionary<string, object>
-                    {
-                        ["Category"] = category,
-                        ["Entry"] = entry,
-                        ["Path"] = Path
-                    })" />
+                    <li style=@($"view-transition-name: --path-{Path.Replace("/","").Replace(".", "").Replace(" ","_")}{entry.Name.Replace(".", "").Replace(" ", "_")}")>
+                        <DynamicComponent Type="@category.GetItemTypeOrFallback(EntryCategories.Base.Category.CategoryItemType.ListEntry)"
+                                          Parameters="@(new Dictionary<string, object>
+                        {
+                            ["Category"] = category,
+                            ["Entry"] = entry,
+                            ["Path"] = Path
+                        })" />
+                    </li>
                 }
             </ul>
         </section>

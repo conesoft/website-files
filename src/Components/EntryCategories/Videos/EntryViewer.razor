@@ -25,7 +25,14 @@
         }
         @* <video fullscreen-viewer src="/*/@Url" controls autoplay></video> *@
 
-        <BlazoredVideo @ref=video style="pointer-events: none; background-color: var(--background-color)" fullscreen-viewer autoplay preload="auto" VideoEventOptions="options" DurationChange="OnDurationChange" TimeUpdate="OnTimeUpdate">
+        <BlazoredVideo
+            @ref=video
+            style="pointer-events: none; background-color: var(--background-color)"
+            fullscreen-viewer autoplay preload="auto"
+            VideoEventOptions="options"
+            DurationChange="OnDurationChange"
+            TimeUpdate="OnTimeUpdate"
+        >
             <source src="/*/@Path" />
             <track label="English"
             kind="subtitles"
@@ -35,7 +42,7 @@
         </BlazoredVideo>
 
         <section fullscreen-viewer>
-            <h1 id="title">@EpisodeTitle.Trim(' ', '-')</h1>
+            <h1 style=@($"view-transition-name: --path-{Path.Replace("/","").Replace(".", "").Replace(" ","_")}") id="title">@EpisodeTitle.Trim(' ', '-')</h1>
             <nav @onkeydown=HandleKeyboard>
                 @if (mute == false)
                 {
@@ -81,11 +88,12 @@
                 }
 
                 <Conesoft.Website.Files.Components.Controls.ProgressSlider LeftText=@($"{currentTime:hh\\:mm\\:ss}")
-                MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
-                RightText=@($"{runTime:hh\\:mm\\:ss}")
-                Value="@(100 * currentTime / runTime)"
-                Scrubbing="Scrubbing"
-                style="grid-area: progress; font-size: 0.8rem" />
+                    MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
+                    RightText=@($"{runTime:hh\\:mm\\:ss}")
+                    Value="@(100 * currentTime / runTime)"
+                    Scrubbing="Scrubbing"
+                    style="grid-area: progress; font-size: 0.8rem"
+                />
             </nav>
         </section>
     </Authorized>
@@ -105,10 +113,10 @@
     // double? scrubbingValue;
 
     Dictionary<VideoEvents, VideoStateOptions> options = new()
-        {
-            [VideoEvents.TimeUpdate] = new VideoStateOptions { CurrentTime = true, Duration = true },
-            [VideoEvents.DurationChange] = new VideoStateOptions { Duration = true }
-        };
+    {
+        [VideoEvents.TimeUpdate] = new VideoStateOptions { CurrentTime = true, Duration = true },
+        [VideoEvents.DurationChange] = new VideoStateOptions { Duration = true }
+    };
 
     public void OnTimeUpdate(VideoState state)
     {

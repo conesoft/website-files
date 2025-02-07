@@ -16,22 +16,30 @@ public abstract class EntryViewerBase : ComponentBase, IDisposable
     CancellationTokenSource? cancellationTokenSource = null;
     void IDisposable.Dispose() => cancellationTokenSource?.Cancel();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (firstRender && HostingPaths.FileAt(Path) is Conesoft.Files.File file)
+        OnLiveChange().Wait();
+
+        if (HostingPaths.FileAt(Path) is Conesoft.Files.File file)
         {
-            cancellationTokenSource = await file.Live(async () =>
+            Task.Run(async () =>
             {
-                await OnLiveChange();
-                await InvokeAsync(StateHasChanged);
+                cancellationTokenSource = await file.Live(async () =>
+                {
+                    await OnLiveChange();
+                    await InvokeAsync(StateHasChanged);
+                });
             });
         }
-        if(firstRender && HostingPaths.DirectoriesAt(Path) is Conesoft.Files.Directory[] directories && directories.Length > 0)
+        if (HostingPaths.DirectoriesAt(Path) is Conesoft.Files.Directory[] directories && directories.Length > 0)
         {
-            cancellationTokenSource = await directories.Live(async () =>
+            Task.Run(async () =>
             {
-                await OnLiveChange();
-                await InvokeAsync(StateHasChanged);
+                cancellationTokenSource = await directories.Live(async () =>
+                {
+                    await OnLiveChange();
+                    await InvokeAsync(StateHasChanged);
+                });
             });
         }
     }

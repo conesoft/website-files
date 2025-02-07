@@ -35,7 +35,7 @@
             {
                 @("▸")
 
-                <NavLink style=@($"view-transition-name: --path-{crumb.Path.Replace("/","").Replace(" ","_")}") Match=NavLinkMatch.All href="@crumb.Path">@crumb.Segment</NavLink>
+                <NavLink style=@($"view-transition-name: --path-{crumb.Path.Replace("/","").Replace(".", "").Replace(" ","_")}") Match=NavLinkMatch.All href="@crumb.Path">@crumb.Segment</NavLink>
             }
 
         }

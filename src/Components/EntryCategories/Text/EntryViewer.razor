@@ -5,7 +5,7 @@
 @using Serilog
 
 <main>
-    <section>
+    <section style="view-transition-name: --category-@(Category.Name?.Replace(" ", "") ?? "")">
         <pre style="padding: 2rem 1rem">
             @text
         </pre>
