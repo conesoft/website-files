@@ -1,0 +1,38 @@
+main {
+    place-self: stretch;
+    place-content: stretch;
+    grid-template: "all";
+}
+
+    main, main * {
+        place-self: stretch;
+        margin: 0;
+        box-shadow: none;
+    }
+
+h1 {
+    padding-block: 2rem;
+    text-align: center;
+    grid-column: 1 / -1;
+    -webkit-mask: linear-gradient(#000 0 0) text;
+    color: rgb(255, 255, 255, 0.125);
+    font-weight: 900;
+    font-size: 3rem;
+    backdrop-filter: saturate(100%) blur(1rem);
+    text-align: center;
+    -webkit-text-stroke: rgb(255, 255, 255, 0) 0.25rem;
+    padding: 1rem;
+    padding-block-end: 3rem;
+}
+
+audio {
+    width: 50%;
+    padding-inline: 5rem;
+    transform-origin: left;
+    scale: 2;
+    opacity: 0.7;
+}
+
+    audio::-webkit-media-controls-panel {
+        background: black;
+    }

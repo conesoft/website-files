@@ -1,0 +1,18 @@
+﻿@using Conesoft.Website.Files.Components.Controls
+@using Conesoft.Website.Files.Components.EntryCategories.Base.Components
+@using Conesoft.Website.Files.Components.EntryCategories.Base.Components.ContextMenuEntries
+
+@inherits Base.EntryViewerBase
+
+<main class="fit-screen" fullscreen-viewer>
+    <section>
+        <div>
+            <h1>@Entry.NameWithoutExtension</h1>
+            <audio src="*/@Path" controls autoplay />
+        </div>
+    </section>
+</main>
+
+@code {
+    protected override Task OnLiveChange() => Task.CompletedTask;
+}
