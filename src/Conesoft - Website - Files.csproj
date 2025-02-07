@@ -8,13 +8,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Components\Controls\FileRenderers\**" />
-	  <Content Remove="Components\Controls\FileRenderers\**" />
-	  <EmbeddedResource Remove="Components\Controls\FileRenderers\**" />
-	  <None Remove="Components\Controls\FileRenderers\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Conesoft.Hosting" Version="3.4.12" />
 		<PackageReference Include="Conesoft.ZipFolder" Version="2.1.0" />
 		<PackageReference Include="System.Management" Version="9.0.1" />
