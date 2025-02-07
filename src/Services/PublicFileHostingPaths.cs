@@ -1,1 +1,1 @@
-﻿record PublicFileHostingPaths(params string[] Paths);
+﻿public record PublicFileHostingPaths(params string[] Paths);

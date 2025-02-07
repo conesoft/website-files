@@ -3,7 +3,7 @@ using Serilog;
 
 namespace Conesoft.Website.Files.Services;
 
-class FileHostingPaths(Hosting.HostEnvironment environment, IHttpContextAccessor httpContextAccessor, PublicFileHostingPaths publicPaths)
+public class FileHostingPaths(Hosting.HostEnvironment environment, IHttpContextAccessor httpContextAccessor, PublicFileHostingPaths publicPaths)
 {
     public Conesoft.Files.Directory[] GetRoots()
     {

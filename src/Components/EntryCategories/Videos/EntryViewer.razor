@@ -1,4 +1,4 @@
-﻿@inherits Base.EntryViewer
+﻿@inherits Base.EntryViewerBase
 
 @using System
 @using Blazored.Video.Support
@@ -28,10 +28,10 @@
         <BlazoredVideo @ref=video style="pointer-events: none; background-color: var(--background-color)" fullscreen-viewer autoplay preload="auto" VideoEventOptions="options" DurationChange="OnDurationChange" TimeUpdate="OnTimeUpdate">
             <source src="/*/@Path" />
             <track label="English"
-                   kind="subtitles"
-                   srclang="en"
-                   src="/*/@subtitle"
-                   default />
+            kind="subtitles"
+            srclang="en"
+            src="/*/@subtitle"
+            default />
         </BlazoredVideo>
 
         <section fullscreen-viewer>
@@ -81,11 +81,11 @@
                 }
 
                 <Conesoft.Website.Files.Components.Controls.ProgressSlider LeftText=@($"{currentTime:hh\\:mm\\:ss}")
-                                                                           MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
-                                                                           RightText=@($"{runTime:hh\\:mm\\:ss}")
-                                                                           Value="@(100 * currentTime / runTime)"
-                                                                           Scrubbing="Scrubbing"
-                                                                           style="grid-area: progress; font-size: 0.8rem" />
+                MiddleText=@(scrubbingTime.HasValue ? $"{scrubbingTime:hh\\:mm\\:ss}" : "")
+                RightText=@($"{runTime:hh\\:mm\\:ss}")
+                Value="@(100 * currentTime / runTime)"
+                Scrubbing="Scrubbing"
+                style="grid-area: progress; font-size: 0.8rem" />
             </nav>
         </section>
     </Authorized>
@@ -267,4 +267,6 @@
         }
         await base.OnAfterRenderAsync(firstRender);
     }
+
+    protected override Task OnLiveChange() => Task.CompletedTask;
 }

@@ -5,10 +5,8 @@
 @using System.Text.Json.Serialization
 @using System.Text.Json
 
-@inherits Base.EntryViewer
+@inherits Base.EntryViewerBase
 
-@implements IDisposable
-@inject FileHostingPaths paths
 @inject IJSRuntime runtime
 
 <dialog id="currentEntryDialog" @onclick="@(() => ShowEntryDetails(null))" class="@(current?.Level.ToLowerInvariant() ?? null)">
@@ -157,9 +155,9 @@
                             }
                         </p>
                         @if (entry.Values.TryGetValue("SourceContext", out var sourceContextJson)
-                       && sourceContextJson.ToString() is string sourceContext
-                       && sourceContext.Split(".").LastOrDefault() is string sourceContextName
-                       && string.IsNullOrWhiteSpace(sourceContextName) == false)
+                      && sourceContextJson.ToString() is string sourceContext
+                      && sourceContext.Split(".").LastOrDefault() is string sourceContextName
+                      && string.IsNullOrWhiteSpace(sourceContextName) == false)
                         {
                             <var>@sourceContextName</var>
                         }
@@ -223,7 +221,7 @@
         return element.ToString();
     }
 
-    async Task Changed()
+    void Changed()
     {
         SourceContexts = entries
             .Select(e => e.Values.ContainsKey("SourceContext") ? e.Values["SourceContext"].ToString() : "")
@@ -261,40 +259,32 @@
             var hour = i + 1;
             //hours[i] = filtered.Any(f => f.Key == hour) ? ;
         }
-
-        await InvokeAsync(StateHasChanged);
     }
 
     string title = "";
     Entry[] entries = [];
     IGrouping<int, Entry>[] filtered = [];
 
-    CancellationTokenSource? cancellationTokenSource = null;
-
-    public void Dispose() => cancellationTokenSource?.Cancel();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override Task OnLiveChange()
     {
-        if (firstRender && paths.FileAt(Path) is File file)
+        if (HostingPaths.FileAt(Path) is File file)
         {
             title = file.Name;
+            using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var streamReader = new StreamReader(fileStream);
 
-            cancellationTokenSource = await file.Live(async () =>
-            {
-                using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                using var streamReader = new StreamReader(fileStream);
+            entries = streamReader
+            .ReadToEnd()
+            .Split(Environment.NewLine, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => JsonSerializer.Deserialize<Entry>(line))
+            .NotNull()
+            .Reverse()
+            .ToArray();
 
-                entries = streamReader
-                .ReadToEnd()
-                .Split(Environment.NewLine, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                .Select(line => JsonSerializer.Deserialize<Entry>(line))
-                .NotNull()
-                .Reverse()
-                .ToArray();
-
-                await Changed();
-            });
+            Changed();
         }
+
+        return Task.CompletedTask;
     }
 
     public async Task ShowDialog(string id)

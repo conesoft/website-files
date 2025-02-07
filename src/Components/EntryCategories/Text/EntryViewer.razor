@@ -1,40 +1,29 @@
-﻿@inherits Base.EntryViewer
+﻿@inherits Base.EntryViewerBase
 
 @using Conesoft.Tools
 @using Conesoft.Website.Files.Services
 @using Serilog
 
-@implements IDisposable
-@inject FileHostingPaths paths
-
 <main>
     <section>
-        <pre>
+        <pre style="padding: 2rem 1rem">
             @text
         </pre>
     </section>
 </main>
 
 @code {
-    string title = "";
     string text = "";
 
-    CancellationTokenSource? cancellationTokenSource = null;
-    public void Dispose() => cancellationTokenSource?.Cancel();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override Task OnLiveChange()
     {
-        if (firstRender && paths.FileAt(Path) is File file)
+        if (HostingPaths.FileAt(Path) is File file)
         {
-            title = file.Name;
-
-            cancellationTokenSource = await file.Live(async () =>
-            {
-                using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                using var streamReader = new StreamReader(fileStream);
-                text = streamReader.ReadToEnd();
-                await InvokeAsync(StateHasChanged);
-            });
+            using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var streamReader = new StreamReader(fileStream);
+            text = streamReader.ReadToEnd();
         }
+
+        return Task.CompletedTask;
     }
 }

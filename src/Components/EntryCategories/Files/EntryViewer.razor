@@ -2,7 +2,7 @@
 @using Conesoft.Website.Files.Components.EntryCategories.Base.Components
 @using Conesoft.Website.Files.Components.EntryCategories.Base.Components.ContextMenuEntries
 
-@inherits Base.EntryViewer
+@inherits Base.EntryViewerBase
 
 <main>
     <section title="@Category.Name">
@@ -13,3 +13,7 @@
         </ul>
     </section>
 </main>
+
+@code {
+    protected override Task OnLiveChange() => Task.CompletedTask;
+}

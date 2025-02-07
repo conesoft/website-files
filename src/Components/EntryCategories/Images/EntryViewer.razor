@@ -1,31 +1,25 @@
-﻿@inherits Base.EntryViewer
+﻿@inherits Base.EntryViewerBase
 
 @using Conesoft.Files
 @using System.Reflection
 @using Conesoft.Website.Files.Services
 
-@inject FileHostingPaths paths
 @inject NavigationManager nav
 
-<AuthorizeView>
-    <Authorized>
-        <title style="display: none">@Path.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
-        <img fullscreen-viewer src="/*/@Path" />
+<title style="display: none">@Path.Split('/').Last().Replace("%20", " ").Replace(".", " ")</title>
+<img fullscreen-viewer src="/*/@Path" />
 
-        <label id="togglenav" fullscreen-viewer>
+<label id="togglenav" fullscreen-viewer>
 
-            <nav fullscreen-viewer>
-                <button disabled=@string.IsNullOrWhiteSpace(previousLink) @onclick=GoToPrevious id="backward">
-                    <img src="https://cdn.conesoft.net/icons/skip-backward.svg" />
-                </button>
-                <button disabled=@string.IsNullOrWhiteSpace(nextLink) @onclick=GoToNext id="forward">
-                    <img src="https://cdn.conesoft.net/icons/skip-forward.svg" />
-                </button>
-            </nav>
-        </label>
-
-    </Authorized>
-</AuthorizeView>
+    <nav fullscreen-viewer>
+        <button disabled=@string.IsNullOrWhiteSpace(previousLink) @onclick=GoToPrevious id="backward">
+            <img src="https://cdn.conesoft.net/icons/skip-backward.svg" />
+        </button>
+        <button disabled=@string.IsNullOrWhiteSpace(nextLink) @onclick=GoToNext id="forward">
+            <img src="https://cdn.conesoft.net/icons/skip-forward.svg" />
+        </button>
+    </nav>
+</label>
 
 
 @code {
@@ -34,7 +28,7 @@
 
     protected override void OnInitialized()
     {
-        var roots = paths.GetRoots();
+        var roots = HostingPaths.GetRoots();
 
         var fileroot = string.Join("/", Path.Split("/").SkipLast(1));
 
@@ -62,4 +56,6 @@
     {
         nav.NavigateTo(nextLink!, forceLoad: true);
     }
+
+    protected override Task OnLiveChange() => Task.CompletedTask;
 }

@@ -26,13 +26,9 @@ public abstract class Category
     public virtual string? Name => Safe.Try(() => Namespace);
 
     public Type GetItemTypeOrFallback(CategoryItemType itemType) =>
-        GetItemType(itemType)
+        types.Where(t => t.Namespace == GetType().Namespace && t.Name == itemType.ToString()).FirstOrDefault()
         ??
         types.Where(t => t.Namespace == baseType.Namespace && t.Name == itemType.ToString()).First()
-        ;
-
-    public Type? GetItemType(CategoryItemType itemType) =>
-        types.Where(t => t.Namespace == GetType().Namespace && t.Name == itemType.ToString()).FirstOrDefault()
         ;
 
     public abstract void From(IEnumerable<Entry> entries);

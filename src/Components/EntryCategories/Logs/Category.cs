@@ -11,7 +11,7 @@ public class Category : Base.Category
         .Select(v => v.entry);
     public override void From(IEnumerable<Entry> entries)
     {
-        this.entries = entries.Files().Where(f => f.Extension == "log");
+        this.entries = entries.Files().Where(f => f.Extension.ToLower() == "log");
     }
 
     private (Entry entry, DateOnly date) ReadDateFromFilename(Entry entry)

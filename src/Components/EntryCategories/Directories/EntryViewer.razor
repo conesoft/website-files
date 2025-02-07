@@ -1,6 +1,6 @@
 ﻿@using Conesoft.Website.Files.Components.Controls
 
-@inherits Base.EntryViewer
+@inherits Base.EntryViewerBase
 
 @using Conesoft.Website.Files.Services
 @using System.Reflection
@@ -8,8 +8,6 @@
 @using Microsoft.AspNetCore.Authorization
 @using Serilog
 
-@implements IDisposable
-@inject FileHostingPaths fileHostingPaths
 @inject CategoryManager categoryManager
 
 <main>
@@ -35,18 +33,22 @@
 @code {
     IEnumerable<Conesoft.Files.Entry> Entries = [];
 
-    CancellationTokenSource? cancellationTokenSource = null;
-    public void Dispose() => cancellationTokenSource?.Cancel();
-
-    protected override async Task OnParametersSetAsync()
+    protected override Task OnLiveChange()
     {
-        var roots = fileHostingPaths.DirectoriesAt(Path);
+        Entries = HostingPaths.DirectoriesAt(Path).Entries().ToArray();
 
-        cancellationTokenSource = await roots.Live(async () =>
-        {
-            Entries = roots.Entries().ToArray();
-            var categories = categoryManager.Group(Entries);
-            await InvokeAsync(StateHasChanged);
-        });
+        return Task.CompletedTask;
     }
+
+    // protected override async Task OnParametersSetAsync()
+    // {
+    //     var roots = HostingPaths.DirectoriesAt(Path);
+
+    //     cancellationTokenSource = await roots.Live(async () =>
+    //     {
+    //         Entries = roots.Entries().ToArray();
+    //         var categories = categoryManager.Group(Entries);
+    //         await InvokeAsync(StateHasChanged);
+    //     });
+    // }
 }

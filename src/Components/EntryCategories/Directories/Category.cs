@@ -6,7 +6,7 @@ public class Category : Base.Category
 {
     public override string? Name => null;
 
-    public override IEnumerable<Entry> OrganisedEntries => base.OrganisedEntries.DistinctBy(e => e.Name);
+    public override IEnumerable<Entry> OrganisedEntries => base.OrganisedEntries.DistinctBy(e => e.Name.ToLower());
 
     public override void From(IEnumerable<Entry> entries)
     {
