@@ -1,0 +1,28 @@
+﻿@inject IJSRuntime JsRuntime
+
+<ContextMenuEntry Name="rename" IconCharacter="✎" Roles="Admin, Editor" @onclick="RenameEntry" />
+
+@code {
+    [Parameter]
+    public Entry Entry { get; set; } = default!;
+
+    public async Task RenameEntry() => await Safe.TryAsync(async () =>
+    {
+        string? confirmed = await JsRuntime.InvokeAsync<string?>("prompt",
+            $"enter new filename for \n{Entry.NameWithoutExtension}",
+            Entry.NameWithoutExtension
+        );
+
+        if (string.IsNullOrWhiteSpace(confirmed) == false)
+        {
+            if (Entry is Directory directory)
+            {
+                directory.Rename(Filename.FromExtended(confirmed));
+            }
+            if (Entry is File file)
+            {
+                file.Rename(Filename.From(confirmed, file.Extension));
+            }
+        }
+    });
+}

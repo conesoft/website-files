@@ -7,11 +7,74 @@
 <main class="fit-screen" fullscreen-viewer>
     <section>
         <div>
-            <h1>@Entry.NameWithoutExtension</h1>
+            <h1 style=@($"view-transition-name: --path-{Path.Replace("/","").Replace(".", "").Replace(" ","_")}")>
+                @Entry.NameWithoutExtension
+            </h1>
             <audio src="*/@Path" controls autoplay />
         </div>
     </section>
+    <canvas id="canvas"></canvas>
 </main>
+
+@if (RendererInfo.IsInteractive)
+{
+    @* based on https://codepen.io/nfj525/pen/rVBaab *@
+    <script>
+        console.clear();
+
+        let audioPlayer = document.querySelector('audio');
+
+
+        audioPlayer.onplay = function() {
+            var context = new AudioContext();
+            var src = context.createMediaElementSource(audioPlayer);
+            analyser = context.createAnalyser();
+            analyser.fftSize = 128;
+
+            src.connect(analyser);
+            analyser.connect(context.destination);
+
+            var bufferLength = analyser.frequencyBinCount;
+
+            var dataArray = new Uint8Array(bufferLength);
+
+            var canvas = document.getElementById("canvas");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            var ctx = canvas.getContext("2d");
+
+            var WIDTH = canvas.width;
+            var HEIGHT = canvas.height;
+
+            var barWidth = (WIDTH / bufferLength);
+            var barHeight = 0;
+            var x = 0;
+
+            function renderFrame() {
+                requestAnimationFrame(renderFrame);
+
+                x = 0;
+
+                analyser.getByteFrequencyData(dataArray);
+
+                ctx.fillStyle = "#000";
+                ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+                for (var i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i];
+
+                    ctx.fillStyle = "rgba(0, 250, 154," + (barHeight / 256) + ")";
+                    //ctx.fillRect(x, 0, barWidth, HEIGHT);
+                    ctx.fillRect(x, HEIGHT * (1 - barHeight / 256), barWidth, HEIGHT * barHeight / 256);
+
+                    x += barWidth + 1;
+                }
+            }
+
+            renderFrame();
+        };
+    </script>
+}
 
 @code {
     protected override Task OnLiveChange() => Task.CompletedTask;

@@ -8,13 +8,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Conesoft.Hosting" Version="3.4.12" />
+		<PackageReference Include="Conesoft.Hosting" Version="3.4.14" />
 		<PackageReference Include="Conesoft.ZipFolder" Version="2.1.0" />
 		<PackageReference Include="System.Management" Version="9.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\blazor-components\src\Blazor Components.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="Components\EntryCategories\Base\Components\ContextMenuEntries\RenameMenuEntry.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
 	</ItemGroup>
 
 </Project>

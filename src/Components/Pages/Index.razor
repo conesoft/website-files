@@ -2,11 +2,14 @@
 
 @using Conesoft.Website.Files.Components.Controls
 @using Conesoft.Website.Files.Services
+@using Serilog
 
 @inject FileHostingPaths paths
 @inject NavigationManager navigation
 
 @inject CategoryManager categoryManager
+@inject IHttpContextAccessor httpContextAccessor
+
 
 @rendermode InteractiveServer
 

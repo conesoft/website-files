@@ -22,6 +22,7 @@ builder.Services
     .AddSingleton(new PublicFileHostingPaths(@"D:\Public", @"E:\Public"))
     .AddScoped<FileHostingPaths>()
     .AddSingleton<CategoryManager>()
+    .AddHttpContextAccessor()
     .AddRazorComponents().AddInteractiveServerComponents()
     ;
 
