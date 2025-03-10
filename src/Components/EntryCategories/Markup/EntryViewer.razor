@@ -1,0 +1,27 @@
+﻿@inherits Base.EntryViewerBase
+
+@using Conesoft.Tools
+@using Conesoft.Website.Files.Services
+@using Serilog
+
+<main>
+    <section fullscreen-viewer style="view-transition-name: --category-@(Category.Name?.Replace(" ", "") ?? "")">
+        @text
+     </section>
+</main>
+
+@code {
+    MarkupString text = new();
+
+    protected override Task OnLiveChange()
+    {
+        if (HostingPaths.FileAt(Path) is File file)
+        {
+            using var fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var streamReader = new StreamReader(fileStream);
+            text = new MarkupString(streamReader.ReadToEnd());
+        }
+
+        return Task.CompletedTask;
+    }
+}

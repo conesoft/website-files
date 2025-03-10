@@ -31,7 +31,7 @@ var app = builder.Build();
 app.MapPwaInformationFromAppSettings();
 app.MapStaticAssets();
 app.MapUsersWithStorage();
-app.MapFileHandlerRoute();
+app.MapFileHandlerRoutes();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();

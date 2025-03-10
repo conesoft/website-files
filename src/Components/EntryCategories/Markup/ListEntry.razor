@@ -1,0 +1,21 @@
+﻿@using Conesoft.Website.Files.Components.EntryCategories.Base.Components
+@using Conesoft.Website.Files.Components.EntryCategories.Base.Components.ContextMenuEntries
+@using Conesoft.Website.Files.Services
+
+@inherits EntryCategories.Base.ListEntry
+
+@inject FileHostingPaths hostingPaths
+
+<DefaultListEntry IconSource="file-icon.svg">
+
+    <ChildContent>
+        <a href="/**/@Path/@Entry.Name" target="_blank">@Entry.Name</a>
+    </ChildContent>
+
+    <MenuList>
+        <RenameMenuEntry Entry="@Entry" />
+        <DownloadMenuEntry Path="@Path" Entry="@Entry" />
+        <DeleteMenuEntry Entry="@Entry" />
+    </MenuList>
+
+</DefaultListEntry>

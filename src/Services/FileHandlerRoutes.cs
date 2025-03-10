@@ -3,9 +3,15 @@ using Microsoft.AspNetCore.StaticFiles;
 
 namespace Conesoft.Website.Files.Services;
 
-public static class FileHandlerRoute
+public static class FileHandlerRoutes
 {
-    public static void MapFileHandlerRoute(this WebApplication app) => app.MapGet("/*/{*route}", (FileHostingPaths paths, string route, HttpContext context) =>
+    public static void MapFileHandlerRoutes(this WebApplication app)
+    {
+        app.MapGet("/*/{*route}", (FileHostingPaths paths, string route, HttpContext context) => MapFileHandlerRoute(paths, route, context, download: true));
+        app.MapGet("/**/{*route}", (FileHostingPaths paths, string route, HttpContext context) => MapFileHandlerRoute(paths, route, context, download: false));
+    }
+
+    public static IResult MapFileHandlerRoute(FileHostingPaths paths, string route, HttpContext context, bool download)
     {
         if (paths.DirectoryAt(route) is Conesoft.Files.Directory directory)
         {
@@ -24,9 +30,9 @@ public static class FileHandlerRoute
                 ".mkv" => "video/webm", // evil but works.. :(
                 _ => "application/octet-stream"
             };
-            return Results.File(file.Path, contentType, file.Name, enableRangeProcessing: true);
+            return Results.File(file.Path, contentType, download ? file.Name : null, enableRangeProcessing: download);
         }
 
         return Results.NotFound();
-    });
+    }
 }

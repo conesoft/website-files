@@ -14,7 +14,11 @@ public abstract class EntryViewerBase : ComponentBase, IDisposable
     protected abstract Task OnLiveChange();
 
     CancellationTokenSource? cancellationTokenSource = null;
-    void IDisposable.Dispose() => cancellationTokenSource?.Cancel();
+    void IDisposable.Dispose()
+    {
+        cancellationTokenSource?.Cancel();
+        GC.SuppressFinalize(this);
+    }
 
     protected override void OnInitialized()
     {

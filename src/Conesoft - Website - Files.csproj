@@ -8,9 +8,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Conesoft.Hosting" Version="3.4.14" />
-		<PackageReference Include="Conesoft.ZipFolder" Version="2.1.0" />
-		<PackageReference Include="System.Management" Version="9.0.1" />
+		<PackageReference Include="Conesoft.Hosting" Version="3.5.10" />
+		<PackageReference Include="Conesoft.ZipFolder" Version="2.1.1" />
+		<PackageReference Include="System.Management" Version="9.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -12,6 +12,11 @@ section {
         ". ........ ........ ........ ........ ........ ........ ........ . " 0rem
         ". progress progress progress progress progress progress progress . " 2rem / auto 4rem 2rem 4rem 4rem 4rem 2rem 4rem auto;
     gap: 0.5rem;
+    opacity: 0;
+}
+
+section:hover {
+    opacity: 1;
 }
 
 nav {
