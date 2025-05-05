@@ -2,11 +2,11 @@
     <div class="background"></div>
     <progress min=0 max=100 value="@value"></progress>
     <input type=range min=0 max=100 step=0.1
-        @bind-value=value
-        @bind-value:event="oninput"
-        @bind-value:after="Refresh"
-        @onpointerdown="PointerDown"
-        @onpointerup="PointerUp">
+    @bind-value=value
+    @bind-value:event="oninput"
+    @bind-value:after="Refresh"
+    @onpointerdown="PointerDown"
+    @onpointerup="PointerUp">
     <p class="lefttext">@LeftText</p>
     <p class="middletext">@MiddleText</p>
     <p class="righttext">@RightText</p>
@@ -51,10 +51,7 @@
 
     public async Task PointerUp()
     {
-        if(Scrubbing != null)
-        {
-            await Scrubbing(null);
-        }
+        await Scrubbing?.Invoke(null);
         scrubbing = false;
     }
 

@@ -1,80 +1,67 @@
 section {
-    width: 100%;
-    /* max-width: 32rem; */
-    place-self: end center;
-    place-content: center;
+    place-self: end;
     height: auto;
-    padding: 3rem 1rem;
+    place-content: end stretch;
     transition: all 0.33s linear;
     grid-template:
-        "title title title title title title title title title" auto
-        ". mute ........ backward play forward ........ maximize . " 4rem
-        ". ........ ........ ........ ........ ........ ........ ........ . " 0rem
-        ". progress progress progress progress progress progress progress . " 2rem / auto 4rem 2rem 4rem 4rem 4rem 2rem 4rem auto;
-    gap: 0.5rem;
+        "title title title title" auto
+        "play move progress controls" 2rem
+    
+        / 2rem 4rem auto 4rem;
+    gap: 1rem 0.5rem;
+    padding: 1rem;
     opacity: 0;
 }
 
-section:hover {
-    opacity: 1;
-}
+    section:hover {
+        opacity: 1;
+    }
 
 nav {
     display: contents;
 }
 
-h1 {
+hgroup {
+    display: grid;
+    grid-area: title;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 0 1rem;
+}
+
+hgroup h1, hgroup h2, hgroup label {
     grid-column: 1 / -1;
     -webkit-mask: linear-gradient(#000 0 0) text;
     color: rgb(255, 255, 255, 0.125);
     font-weight: 900;
-    font-size: 3rem;
+    font-size: 2rem;
     backdrop-filter: saturate(100%) blur(1rem);
-    text-align: center;
+    /*text-align: center;*/
     -webkit-text-stroke: rgb(255, 255, 255, 0) 0.25rem;
-    padding: 1rem;
-    padding-block-end: 3rem;
+}
+hgroup h1 {
+    font-weight: 300;
+}
+hgroup label {
+    font-weight: 100;
+}
+hgroup:has(label) h2, hgroup:has(label) label {
+    grid-column: auto;
 }
 
 nav * {
     display: grid;
 }
-/*
-#togglenav {
-    background: transparent;
-    scale: 1;
-    place-content: end center;
-}
 
-    #togglenav > input {
-        display: none;
-    }
-
-        #togglenav > input + * {
-            transition: 0.33s;
-        }
-
-@media(hover: none) {
-    #togglenav > input:not(checked) + * {
-        opacity: 0;
-    }
-}*/
-/*@media(hover) {*/
-section: not(:hover) * {
+section:not(:hover) * {
     opacity: 0; /* to kill the hw video hw acceleration darkness bug */
 }
-
-::deep:not(:hover) .slider {
-    opacity: 0;
-    transition: all 0.33s linear;
-}
-/*}*/
 
 ::deep video {
     background: var(--background-color);
 }
 
-#mute {
+#mute, #unmute {
     grid-area: mute;
 }
 
@@ -82,64 +69,39 @@ section: not(:hover) * {
     grid-area: backward;
 }
 
-#play {
+#play, #pause {
     grid-area: play;
+}
+
+#playbutton {
+    scale: 1.25;
+}
+
+#move {
+    grid-area: move;
+    grid-template: "backward forward" / 1fr 1fr;
+}
+
+#controls {
+    grid-area: controls;
+    grid-template: "mute maximize" / 1fr 1fr;
 }
 
 #forward {
     grid-area: forward;
 }
 
-#maximize {
+nav fieldset {
+    display: grid;
+    border-radius: 9999rem;
+    background: rgb(127, 127, 127, 0.25);
+    backdrop-filter: saturate(150%) blur(2rem);
+    transition: all 0s linear;
+    transition: opacity 0.333s linear;
+}
+
+#maximize, #enterfullscreen, #exitfullscreen {
     grid-area: maximize;
-}
-
-::deep .slider {
-    background: rgb(127, 127, 127, 0.125);
-    backdrop-filter: saturate(150%) blur(2rem);
-    border-radius: var(--glow-radius);
-}
-
-#progress {
-    grid-area: progress;
-    place-self: stretch stretch;
-    grid-template: "all";
-    background: rgb(127, 127, 127, 0.125);
-    backdrop-filter: saturate(150%) blur(2rem);
-}
-
-    #progress > * {
-        grid-area: all;
-    }
-
-#progress-background {
-    background: rgb(255, 255, 255, 0.25);
-    backdrop-filter: saturate(150%) blur(2rem);
-    transition: all 0.33s linear;
-    opacity: 0.3;
-}
-
-#progress:hover #progress-background {
-    opacity: 1;
-}
-
-#progress input {
-    cursor: ew-resize;
-}
-
-#progress :is(progress, input, p) {
-    z-index: 1;
-}
-
-#progress p {
-    padding-inline: 1rem;
-    color: var(--accent-color);
-    mix-blend-mode: difference;
-}
-
-#progress-background,
-progress::-webkit-progress-value {
-    border-radius: 1rem;
 }
 
 #current {
@@ -169,10 +131,8 @@ nav:hover {
 }
 
 nav button {
-    border-radius: 9999rem;
-    background: rgb(127, 127, 127, 0.125);
-    backdrop-filter: saturate(150%) blur(2rem);
     color: var(--color);
+    border-radius: 9999rem;
     font-size: 3rem;
     transition: all 0s linear;
     transition: opacity 0.333s linear;
@@ -189,3 +149,84 @@ nav button {
         aspect-ratio: 1;
         place-self: center;
     }
+
+
+
+
+/* slider */
+.slider {
+    display: grid;
+    grid-template: "all";
+    place-items: center;
+    place-content: stretch;
+    --height: 2rem;
+    --radius: calc(var(--height) / 2);
+    --glow-radius: 1rem;
+    backdrop-filter: saturate(150%) blur(2rem);
+    border-radius: var(--glow-radius);
+}
+
+    .slider > * {
+        grid-area: all;
+        appearance: none;
+        width: 100%;
+        display: initial;
+    }
+
+progress {
+    height: 0;
+    border-radius: var(--radius);
+    padding-inline: var(--radius);
+    z-index: 1;
+}
+
+    progress::-webkit-progress-value {
+        appearance: none;
+        height: 0;
+        outline: var(--radius) solid var(--accent-color);
+        border-radius: var(--radius);
+        border: 0.00001rem solid var(--accent-color); /* hack to get round borders */
+        box-shadow: 0 0 var(--glow-radius) var(--radius) var(--accent-color);
+        transition: none;
+    }
+
+input, input:hover, input:focus {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    z-index: 1;
+}
+
+    input::-webkit-slider-thumb {
+        appearance: none;
+        width: calc(var(--radius) * 2);
+        height: calc(var(--radius) * 2);
+        border-radius: var(--radius);
+        cursor: ew-resize;
+        background-color: var(--accent-color);
+        transition: all 0.333s linear;
+    }
+
+        input::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 var(--glow-radius) var(--accent-color);
+        }
+
+p {
+    padding-inline: var(--radius);
+    color: var(--accent-color);
+    mix-blend-mode: difference;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.lefttext {
+    text-align: left;
+}
+
+.middletext {
+    text-align: center;
+}
+
+.righttext {
+    text-align: right;
+}

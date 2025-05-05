@@ -1,5 +1,4 @@
 ﻿using Conesoft.Files;
-using Serilog;
 
 namespace Conesoft.Website.Files.Services;
 
@@ -50,68 +49,5 @@ public class FileHostingPaths(Hosting.HostEnvironment environment, IHttpContextA
 
 public static class MultiDirectoryExtensions
 {
-    public static IEnumerable<Conesoft.Files.File> Files(this IEnumerable<Conesoft.Files.Directory> directories) => directories.SelectMany(d => d.Files);
-    public static IEnumerable<Conesoft.Files.Directory> Directories(this IEnumerable<Conesoft.Files.Directory> directories) => directories.SelectMany(d => d.Directories);
     public static IEnumerable<Conesoft.Files.Entry> Entries(this IEnumerable<Conesoft.Files.Directory> directories) => directories.SelectMany(d => (Entry[])[..d.Files, ..d.Directories]);
-
-    public static async Task<CancellationTokenSource> Live(this IEnumerable<Conesoft.Files.Directory> directories, Func<Task> onChange)
-    {
-        await onChange();
-        var cts = new CancellationTokenSource();
-        var _ = Task.WhenAll(directories.Select(root => Task.Run(async () =>
-        {
-            try
-            {
-                await foreach (var _ in root.Live(false, cts.Token).EndOnCancel(cts.Token))
-                {
-                    await onChange();
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error("exception: {exception}", e);
-            }
-        })));
-        return cts;
-    }
-
-    public static async Task<CancellationTokenSource> Live(this Conesoft.Files.File file, Func<Task> onChange)
-    {
-        await onChange();
-        var cts = new CancellationTokenSource();
-        var _ = Task.Run(async () =>
-        {
-            try
-            {
-                await foreach (var _ in file.Live(cts.Token).EndOnCancel(cts.Token))
-                {
-                    await onChange();
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error("exception: {exception}", e);
-            }
-        });
-        return cts;
-    }   
-
-    public static void Live(this IEnumerable<Conesoft.Files.Directory> directories, Action onChange, CancellationToken cancellationToken = default)
-    {
-        onChange();
-        var _ = Task.WhenAll(directories.Select(root => Task.Run(async () =>
-        {
-            try
-            {
-                await foreach (var _ in root.Live(false, cancellationToken).EndOnCancel(cancellationToken))
-                {
-                    onChange();
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error("exception: {exception}", e);
-            }
-        })));
-    }
 }

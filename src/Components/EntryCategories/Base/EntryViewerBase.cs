@@ -26,24 +26,18 @@ public abstract class EntryViewerBase : ComponentBase, IDisposable
 
         if (HostingPaths.FileAt(Path) is Conesoft.Files.File file)
         {
-            Task.Run(async () =>
+            cancellationTokenSource = file.Live(async () =>
             {
-                cancellationTokenSource = await file.Live(async () =>
-                {
-                    await OnLiveChange();
-                    await InvokeAsync(StateHasChanged);
-                });
+                await OnLiveChange();
+                await InvokeAsync(StateHasChanged);
             });
         }
         if (HostingPaths.DirectoriesAt(Path) is Conesoft.Files.Directory[] directories && directories.Length > 0)
         {
-            Task.Run(async () =>
+            cancellationTokenSource = directories.Live(async () =>
             {
-                cancellationTokenSource = await directories.Live(async () =>
-                {
-                    await OnLiveChange();
-                    await InvokeAsync(StateHasChanged);
-                });
+                await OnLiveChange();
+                await InvokeAsync(StateHasChanged);
             });
         }
     }
