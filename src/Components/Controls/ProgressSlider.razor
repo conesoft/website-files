@@ -51,7 +51,7 @@
 
     public async Task PointerUp()
     {
-        await Scrubbing?.Invoke(null);
+        await (Scrubbing?.Invoke(null) ?? Task.CompletedTask);
         scrubbing = false;
     }
 

@@ -297,7 +297,7 @@
         await runtime.InvokeVoidAsync($"{id}.close");
     }
 
-    record Entry(
+    new record Entry(
         [property: JsonPropertyName("@t")] DateTime Timestamp,
         [property: JsonPropertyName("@m")] string? Message,
         [property: JsonPropertyName("@mt")] string? MessageTemplate,

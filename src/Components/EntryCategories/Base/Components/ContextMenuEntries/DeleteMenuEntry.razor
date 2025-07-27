@@ -11,11 +11,11 @@
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\n{Entry.Path}");
         if (confirmed && Entry is Directory directory)
         {
-            directory.Delete();
+            _ = directory.Delete();
         }
         if (confirmed && Entry is File file)
         {
-            file.Delete();
+            _ = file.Delete();
         }
     }
 }

@@ -69,8 +69,11 @@ section:not(:hover) * {
     grid-area: backward;
 }
 
-#play, #pause {
-    grid-area: play;
+body:has(video.playing) #playbutton .when-paused {
+    opacity: 0
+}
+body:not(:has(video.playing)) #playbutton .when-playing {
+    opacity: 0
 }
 
 #playbutton {
@@ -98,6 +101,14 @@ nav fieldset {
     backdrop-filter: saturate(150%) blur(2rem);
     transition: all 0s linear;
     transition: opacity 0.333s linear;
+}
+
+button {
+    display: grid;
+    grid-template: "all";
+}
+button > * {
+    grid-area: all;
 }
 
 #maximize, #enterfullscreen, #exitfullscreen {

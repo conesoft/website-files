@@ -47,6 +47,7 @@ export function main(args) {
             }
             mouseTimer = window.setTimeout(disappearCursor, 2000)
         };
+        mouseTimer = window.setTimeout(disappearCursor, 2000)
     }
 
     function toggleMuting() {
@@ -63,9 +64,9 @@ export function main(args) {
         unmute.style.visibility = muted ? 'visible' : 'hidden'
 
         let playing = video.paused == false
-        //video.classList.toggle('playing', playing)
-        play.style.visibility = playing ? 'hidden' : 'visible'
-        pause.style.visibility = playing ? 'visible' : 'hidden'
+        video.classList.toggle('playing', playing)
+        //play.style.visibility = playing ? 'hidden' : 'visible'
+        //pause.style.visibility = playing ? 'visible' : 'hidden'
 
         let ratio = video.duration > 0 ? video.currentTime / video.duration : 0
         progress.value = ratio * 100
@@ -89,8 +90,8 @@ export function main(args) {
     backward.onclick = () => video.currentTime -= 10
     mute.onclick = () => video.muted = true
     unmute.onclick = () => video.muted = false
-    play.onclick = () => video.play()
-    pause.onclick = () => video.pause()
+    play.onclick = () => togglePlayPause()
+    //pause.onclick = () => video.pause()
     range.oninput = () => video.currentTime = video.duration * range.value / range.max
 
     document.onkeydown = event => {

@@ -1,12 +1,15 @@
 ﻿@using Conesoft.Website.Files.Components.EntryCategories.Base.Components
 @using Conesoft.Website.Files.Components.EntryCategories.Base.Components.ContextMenuEntries
+@using Conesoft.Website.Files.Services
 
 @inherits EntryCategories.Base.ListEntry
 
-<DefaultListEntry IconSource="folder">
-    
+@inject FileHostingPaths hostingPaths
+
+<DefaultListEntry IconSource="music">
+
     <ChildContent>
-        <a href="@Path/@Entry.Name">@Entry.Name</a>
+        <a href="@Path/@Entry.Name">@Entry.NameWithoutExtension</a>
     </ChildContent>
 
     <MenuList>
